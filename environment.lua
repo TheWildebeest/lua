@@ -1,0 +1,16 @@
+Environment = Object:extend()
+
+function Environment:new(screen_width, screen_height, fullscreen, debug)
+  self.screen_width = screen_width
+  self.screen_height = screen_height
+  self.fullscreen = fullscreen
+  self.wall_thickness = screen_width * 0.01
+  self.spacer = screen_width * 0.02
+  self.meter = screen_width * 0.1
+  self.use_ball = debug
+end
+
+function Environment:update(dt, screen_width, screen_height)
+  self.screen_width = screen_width
+  self.screen_height = screen_height
+end
