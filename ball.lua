@@ -1,4 +1,4 @@
-if ENVIRONMENT.USEBALL then
+if ENVIRONMENT.use_ball then
 
   Ball = NewObject("dynamic", "circle", World, ENVIRONMENT.screen_width / 2, ENVIRONMENT.screen_height / 2, 20)
   Ball.fixture:setRestitution(0.7) -- let the ball bounce

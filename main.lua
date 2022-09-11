@@ -1,5 +1,6 @@
 io.stdout:setvbuf("no")
 Object = require("classic")
+Collisions = require("collisions")
 require "environment"
 require "boundaries"
 require "categories"
@@ -7,8 +8,10 @@ require "boy"
 
 
 function love.load()
-  ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight())
-  World = love.physics.newWorld(0, 9.81 * ENVIRONMENT.meter, true)
+  math.randomseed(os.time())
+  ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
+  World = love.physics.newWorld(0, 8 * ENVIRONMENT.meter, true)
+  World:setCallbacks(Collisions.beginContact)
   love.physics.setMeter(ENVIRONMENT.meter)
   -- World boundaries (ceiling, walls, and floor)
   Walls = Boundaries(ENVIRONMENT, World)
@@ -35,10 +38,9 @@ function love.draw()
   Walls:draw()
   Ball.draw()
 
-  -- set the drawing color to grey for the blocks
-  for _, eachboy in ipairs(AllBoyz) do
-    if eachboy ~= nil then eachboy:draw() end
-  end
+  -- for _, eachboy in ipairs(AllBoyz) do
+  --   if eachboy ~= nil then eachboy:draw() end
+  -- end
   -- Boy:draw()
   love.graphics.setColor(0.20, 0.20, 0.20)
   for _, boy in ipairs(AllBoyz) do

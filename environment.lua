@@ -8,6 +8,8 @@ function Environment:new(screen_width, screen_height, fullscreen, debug)
   self.spacer = screen_width * 0.02
   self.meter = screen_width * 0.1
   self.use_ball = debug
+
+  if self.fullscreen then love.window.setFullscreen(true, "exclusive") end
 end
 
 function Environment:update(dt, screen_width, screen_height)
