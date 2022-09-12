@@ -1,6 +1,7 @@
 io.stdout:setvbuf("no")
 Object = require("classic")
 Collisions = require("collisions")
+Tiled = require("tiled")
 require "environment"
 require "boundaries"
 require "categories"
@@ -10,9 +11,13 @@ require "boy"
 function love.load()
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
-  World = love.physics.newWorld(0, 8 * ENVIRONMENT.meter, true)
-  World:setCallbacks(Collisions.beginContact)
+  Map = Tiled("assets/map/1.lua", { "box2d" })
+  World = love.physics.newWorld(0, 0)
+  Map:box2d_init(World)
+  Map.layers.solid.visible = false
   love.physics.setMeter(ENVIRONMENT.meter)
+  World:setCallbacks(Collisions.beginContact, Collisions.endContact)
+  Background = love.graphics.newImage("assets/map/1.jpg")
   -- World boundaries (ceiling, walls, and floor)
   Walls = Boundaries(ENVIRONMENT, World)
   -- Choreboyz box (dispenses new boyz)
@@ -35,18 +40,14 @@ function love.update(dt)
 end
 
 function love.draw()
-  Walls:draw()
+  love.graphics.draw(Background)
+  -- Walls:draw()
   Ball.draw()
-
-  -- for _, eachboy in ipairs(AllBoyz) do
-  --   if eachboy ~= nil then eachboy:draw() end
-  -- end
-  -- Boy:draw()
-  love.graphics.setColor(0.20, 0.20, 0.20)
+  Map:draw(0, 0, 1, 1)
+  
+  -- Draw the choreboyz
   for _, boy in ipairs(AllBoyz) do
     if boy ~= nil then
-      -- love.graphics.circle("fill", boy.headBody:getWorldPoints(boy.headShape:getPoints()))
-      -- love.graphics.polygon("fill", boy.torsoBody:getWorldPoints(boy.torsoShape:getPoints()))
       boy:draw()
     end
   end
