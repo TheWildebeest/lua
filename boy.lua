@@ -12,7 +12,7 @@ end
 
 -- `Static`
 Boy.initShape = function ()
-  return love.physics.newRectangleShape(0, 0, Boy.width, Boy.height)
+  return love.physics.newRectangleShape(Boy.width, Boy.height)
 end
 
 -- `Static`
@@ -31,15 +31,16 @@ function Boy:new(environment, world)
 end
 
 function Boy:update(dt)
+  self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
   local category = self.fixture:getCategory()
-  self:syncPhysics()
   self:move(dt, category)
   self:applyGravity(dt)
-end
-
-function Boy:syncPhysics()
-  self.x_position, self.y_position = self.body:getPosition()
-  self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
+  
+  if category == Categories.DEADBOY then
+    if (self.y_velocity == 0) and (self.x_velocity == 0) then
+      self.body:setType("static")
+    end
+  end
 end
 
 function Boy:move(dt, category)
@@ -47,6 +48,7 @@ function Boy:move(dt, category)
     self:applyFriction(dt)
   end
   if category == Categories.LIVEBOY then
+
     -- Move right
     if love.keyboard.isDown("d", "right") then
 
@@ -115,6 +117,7 @@ function Boy:keypressed(key, _, isrepeat)
     end
 
     if key == "space" then
+      print(self.y_velocity)
       if not isrepeat then
         if self.is_on_ground then
           self.y_velocity = -self.jump_strength
@@ -132,8 +135,6 @@ function Boy:init(environment, world)
   self.shape = Boy.initShape()
   self.fixture = love.physics.newFixture(self.body, self.shape)
 
-  self.x_position = environment.wall_thickness + environment.screen_width * 0.05
-  self.y_position = environment.wall_thickness + environment.screen_width * 0.075
   self.is_on_ground = false
   self.current_collision = nil
 
@@ -157,19 +158,24 @@ function Boy:reset(environment, world)
 end
 
 function Boy:beginContact(a, b, collision)
+  print("BEGIN CONTACT")
   if self.is_on_ground then return end
-  local _, normal_y
-  _, normal_y = collision:getNormal()
+  local _, normal_y = collision:getNormal()
+  print("Normals: ", "X = " .. tostring(_), "Y = " .. tostring(normal_y))
   if a == self.fixture then
-    if normal_y > 0 then
+    if normal_y == Normals.Y.TOP then
+      print('ABOVE')
       self:land(collision)
-    elseif normal_y < 0 then
+    elseif normal_y == Normals.Y.BOTTOM then
+      print('BENEATH')
       self.y_velocity = 0
     end
   elseif b == self.fixture then
-    if normal_y < 0 then
+    if normal_y == Normals.Y.TOP then
+      print('ABOVE')
       self:land(collision)
-    elseif normal_y > 0 then
+    elseif normal_y == Normals.Y.BOTTOM then
+      print('BENEATH')
       self.y_velocity = 0
     end
   end
@@ -182,10 +188,11 @@ function Boy:endContact(a, b, collision)
     end
   end
 
-  self.is_on_ground = false
+  -- self.is_on_ground = false
 end
 
 function Boy:land(collision)
+  print("LANDING")
   self.current_collision = collision
   self.y_velocity = 0
   self.is_on_ground = true
