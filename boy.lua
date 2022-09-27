@@ -32,10 +32,25 @@ function Boy:new(environment, world)
 end
 
 function Boy:update(dt)
-  self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
   local category = self.fixture:getCategory()
-  self:move(dt, category)
-  self:applyGravity(dt)
+
+  -- Only apply movement to the player sprite
+  if category == Categories.LIVEBOY then
+    self:move(dt)
+  end
+
+  -- Apply gravity to all airborne sprites
+  if not self:isOnSurface() then
+    self:applyGravity(dt)
+  elseif self.y_velocity > 0 then
+    self.y_velocity = 0
+  end
+
+  -- Apply friction to all sprites
+  self:applyFriction(dt)
+
+  self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
+
   
   if category == Categories.DEADBOY then
     if (self.y_velocity == 0) and (self.x_velocity == 0) then
@@ -44,35 +59,27 @@ function Boy:update(dt)
   end
 end
 
-function Boy:move(dt, category)
-  if category == Categories.DEADBOY then
-    self:applyFriction(dt)
-  end
-  if category == Categories.LIVEBOY then
+function Boy:move(dt)
 
-    -- Move right
-    if love.keyboard.isDown("d", "right") then
+  -- Move right
+  if love.keyboard.isDown("d", "right") then
 
-      if self.x_velocity < self.max_speed then
-        if self.x_velocity + self.acceleration * dt < self.max_speed then
-          self.x_velocity = self.x_velocity + self.acceleration * dt
-        else
-          self.x_velocity = self.max_speed
-        end
+    if self.x_velocity < self.max_speed then
+      if self.x_velocity + self.acceleration * dt < self.max_speed then
+        self.x_velocity = self.x_velocity + self.acceleration * dt
+      else
+        self.x_velocity = self.max_speed
       end
+    end
 
-    -- Move left
-    elseif love.keyboard.isDown("a", "left") then
-      if self.x_velocity > -self.max_speed then
-        if self.x_velocity - self.acceleration * dt > -self.max_speed then
-          self.x_velocity = self.x_velocity - self.acceleration * dt
-        else
-          self.x_velocity = -self.max_speed
-        end
+  -- Move left
+  elseif love.keyboard.isDown("a", "left") then
+    if self.x_velocity > -self.max_speed then
+      if self.x_velocity - self.acceleration * dt > -self.max_speed then
+        self.x_velocity = self.x_velocity - self.acceleration * dt
+      else
+        self.x_velocity = -self.max_speed
       end
-    else
-      -- self.body:setLinearVelocity(0, y)
-      self:applyFriction(dt)
     end
   end
 
@@ -95,9 +102,7 @@ function Boy:applyFriction(dt)
 end
 
 function Boy:applyGravity(dt)
-  if not self:isOnSurface() then
-    self.y_velocity = self.y_velocity + self.gravity * dt
-  end
+  self.y_velocity = self.y_velocity + self.gravity * dt
 end
 
 
@@ -160,6 +165,7 @@ function Boy:reset(environment, world)
 end
 
 function Boy:beginContact(a, b, contact)
+  print("beginContact")
   local normal_x, normal_y = contact:getNormal()
   local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
   if IsOnTop(a, b, self.fixture, normal_y) then self:stopVerticalMotion() end
@@ -167,6 +173,8 @@ function Boy:beginContact(a, b, contact)
 end
 
 function Boy:endContact(a, b, contact)
+  print("endContact")
+
   local index = nil
 
   for i, collision_data in ipairs(self.collisions) do
