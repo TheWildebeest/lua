@@ -2,8 +2,8 @@ Boy = Object:extend()
 
 -- Static properties/methods
 
-Boy.width = love.physics:getMeter() * 1.5
-Boy.height = love.physics:getMeter() * 3
+Boy.width = love.physics:getMeter() * 4
+Boy.height = love.physics:getMeter() * 7
 
 -- `Static`
 Boy.initBody = function (environment, world)
@@ -28,6 +28,7 @@ function Boy:new(environment, world)
   -- Boy.default_base_color
   self.highlight_color = Boy.default_highlight_color
   self.color = self.base_color
+  self.image = love.graphics.newImage("assets/img/boy/1.png")
 end
 
 function Boy:update(dt)
@@ -94,7 +95,7 @@ function Boy:applyFriction(dt)
 end
 
 function Boy:applyGravity(dt)
-  if not self.is_on_ground then
+  if not self:isOnSurface() then
     self.y_velocity = self.y_velocity + self.gravity * dt
   end
 end
@@ -103,6 +104,9 @@ end
 function Boy:draw()
   love.graphics.setColor(unpack(self.color))
   love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+  x, y = self.body:getPosition()
+  love.graphics.setColor({ 1, 1, 1 })
+  love.graphics.draw(self.image, x, y, 0, 0.075, 0.075, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
@@ -117,11 +121,10 @@ function Boy:keypressed(key, _, isrepeat)
     end
 
     if key == "space" then
-      print(self.y_velocity)
+      print("Y velocity: "..self.y_velocity)
       if not isrepeat then
-        if self.is_on_ground then
+        if self:isOnSurface() then
           self.y_velocity = -self.jump_strength
-          self.is_on_ground = false
         end
       end
     end
@@ -135,8 +138,7 @@ function Boy:init(environment, world)
   self.shape = Boy.initShape()
   self.fixture = love.physics.newFixture(self.body, self.shape)
 
-  self.is_on_ground = false
-  self.current_collision = nil
+  self.collisions = { }
 
   self.x_velocity = 0
   self.y_velocity = 100
@@ -157,43 +159,44 @@ function Boy:reset(environment, world)
   self:init(environment, world)
 end
 
-function Boy:beginContact(a, b, collision)
-  print("BEGIN CONTACT")
-  if self.is_on_ground then return end
-  local _, normal_y = collision:getNormal()
-  print("Normals: ", "X = " .. tostring(_), "Y = " .. tostring(normal_y))
-  if a == self.fixture then
-    if normal_y == Normals.Y.TOP then
-      print('ABOVE')
-      self:land(collision)
-    elseif normal_y == Normals.Y.BOTTOM then
-      print('BENEATH')
-      self.y_velocity = 0
-    end
-  elseif b == self.fixture then
-    if normal_y == Normals.Y.TOP then
-      print('ABOVE')
-      self:land(collision)
-    elseif normal_y == Normals.Y.BOTTOM then
-      print('BENEATH')
-      self.y_velocity = 0
-    end
-  end
+function Boy:beginContact(a, b, contact)
+  local normal_x, normal_y = contact:getNormal()
+  local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
+  if IsOnTop(a, b, self.fixture, normal_y) then self:stopVerticalMotion() end
+  table.insert(self.collisions, coll)
 end
 
-function Boy:endContact(a, b, collision)
-  if (a == self.fixture or b == self.fixture) and self.is_on_ground then
-    if self.current_collision == collision then
-      self.is_on_ground = false
+function Boy:endContact(a, b, contact)
+  local index = nil
+
+  for i, collision_data in ipairs(self.collisions) do
+    if a == collision_data.fixture_a and b == collision_data.fixture_b then
+      index = i
+    elseif a == collision_data.fixture_b and b == collision_data.fixture_a then
+      index = i
     end
   end
 
-  -- self.is_on_ground = false
+  if index then
+    table.remove(self.collisions, index)
+  end
+
 end
 
-function Boy:land(collision)
-  print("LANDING")
-  self.current_collision = collision
+function Boy:stopVerticalMotion()
   self.y_velocity = 0
-  self.is_on_ground = true
+end
+
+function Boy:isOnSurface()
+
+  local on_top = false
+
+  for _, collision in ipairs(self.collisions) do
+    if IsOnTop(self.fixture, collision.fixture_a, collision.fixture_b, collision.normal_y) then
+      on_top = true
+    end
+  end
+  
+  return on_top
+  
 end
