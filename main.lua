@@ -1,9 +1,9 @@
 io.stdout:setvbuf("no")
 Object = require("classic")
-Collisions = require("collisions")
 Tiled = require("tiled")
+require("collisions")
 require "environment"
-require "boundaries"
+-- require "boundaries"
 require "categories"
 require "boy"
 
@@ -11,15 +11,15 @@ require "boy"
 function love.load()
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
+  love.physics.setMeter(ENVIRONMENT.meter)
   Map = Tiled("assets/map/1.lua", { "box2d" })
   World = love.physics.newWorld(0, 0)
   Map:box2d_init(World)
   Map.layers.solid.visible = false
-  love.physics.setMeter(ENVIRONMENT.meter)
-  World:setCallbacks(Collisions.beginContact, Collisions.endContact)
-  Background = love.graphics.newImage("assets/map/1.jpg")
+  World:setCallbacks(BeginContact, EndContact)
+  Background = love.graphics.newImage("assets/img/background.png")
   -- World boundaries (ceiling, walls, and floor)
-  Walls = Boundaries(ENVIRONMENT, World)
+  -- Walls = Boundaries(ENVIRONMENT, World)
   -- Choreboyz box (dispenses new boyz)
   require "box"
   require "ball"
@@ -32,11 +32,12 @@ function love.update(dt)
   ENVIRONMENT:update(dt, love.graphics.getWidth(), love.graphics.getHeight())
   World:update(dt)
   for _, each in ipairs(AllBoyz) do
-    each:update(dt, Walls, World)
+    each:update(dt)
   end
 
   Box.update(dt)
   Ball.update(dt)
+  Map:update(dt)
 end
 
 function love.draw()
@@ -73,7 +74,7 @@ function love.keypressed(key, _, isrepeat)
     if ENVIRONMENT.fullscreen then
       love.window.setFullscreen(true, "exclusive")
     else
-      love.window.setMode(1280, 720, { resizable=true, borderless=false })
+      love.window.setMode(1920, 1088, { resizable=true, borderless=false })
     end
   end
 
