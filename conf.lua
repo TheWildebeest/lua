@@ -1,4 +1,4 @@
-local iconpath = "assets/sprite_player.png"
+local iconpath = "assets/img/sprite_player.png"
 
 function love.conf(t)
   -- t.identity = nil                    -- The name of the save directory (string)
