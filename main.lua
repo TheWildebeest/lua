@@ -1,14 +1,16 @@
 io.stdout:setvbuf("no")
 Object = require("classic")
 Tiled = require("tiled")
-require("collisions")
+require "collisions"
 require "environment"
 -- require "boundaries"
 require "categories"
 require "boy"
+require "bulb"
 
 
 function love.load()
+  -- love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
   love.physics.setMeter(ENVIRONMENT.meter)

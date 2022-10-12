@@ -2,8 +2,8 @@ Boy = Object:extend()
 
 -- Static properties/methods
 
-Boy.width = love.physics:getMeter() * 4
-Boy.height = love.physics:getMeter() * 7
+Boy.width = love.physics:getMeter() * 2.5
+Boy.height = love.physics:getMeter() * 5
 
 -- `Static`
 Boy.initBody = function (environment, world)
@@ -23,6 +23,7 @@ Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
 
 
 function Boy:new(environment, world)
+  print('Meter: ', love.physics:getMeter())
   self:init(environment, world)
   self.base_color = { math.random(), math.random(), math.random() }
   -- Boy.default_base_color
@@ -52,11 +53,11 @@ function Boy:update(dt)
   self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
 
   
-  if category == Categories.DEADBOY then
-    if (self.y_velocity == 0) and (self.x_velocity == 0) then
-      self.body:setType("static")
-    end
-  end
+  -- if category == Categories.DEADBOY then
+  --   if (self.y_velocity == 0) and (self.x_velocity == 0) then
+  --     self.body:setType("static")
+  --   end
+  -- end
 end
 
 function Boy:move(dt)
@@ -105,13 +106,23 @@ function Boy:applyGravity(dt)
   self.y_velocity = self.y_velocity + self.gravity * dt
 end
 
+function Boy:changeLightbulb()
+  print('Changing the lightbulb!')
+  local x, y = self.body:getPosition()
+  table.insert(AllBoyz, Bulb(World, x, y))
+end
+
 
 function Boy:draw()
-  love.graphics.setColor(unpack(self.color))
-  love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
-  x, y = self.body:getPosition()
+
+  -- love.graphics.setColor(unpack(self.color))
+  -- love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+  local x, y = self.body:getPosition()
   love.graphics.setColor({ 1, 1, 1 })
-  love.graphics.draw(self.image, x, y, 0, 0.075, 0.075, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+
+  local scale_x = Boy.width / self.image:getWidth()
+  local scale_y = Boy.height / self.image:getHeight()
+  love.graphics.draw(self.image, x, y, 0, scale_x, scale_y, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
@@ -131,6 +142,13 @@ function Boy:keypressed(key, _, isrepeat)
         if self:isOnSurface() then
           self.y_velocity = -self.jump_strength
         end
+      end
+    end
+
+    if key == "e" then
+      print("Pressing E ")
+      if not isrepeat then
+        self:changeLightbulb()
       end
     end
 
