@@ -27,6 +27,8 @@ function love.load()
   require "ball"
   -- Table to hold AllBoyz
   AllBoyz = { }
+  -- Table to hold AllBulbz
+  AllBulbz = { }
 end
 
 
@@ -34,6 +36,10 @@ function love.update(dt)
   ENVIRONMENT:update(dt, love.graphics.getWidth(), love.graphics.getHeight())
   World:update(dt)
   for _, each in ipairs(AllBoyz) do
+    each:update(dt)
+  end
+
+  for _, each in ipairs(AllBulbz) do
     each:update(dt)
   end
 
@@ -50,6 +56,13 @@ function love.draw()
   
   -- Draw the choreboyz
   for _, boy in ipairs(AllBoyz) do
+    if boy ~= nil then
+      boy:draw()
+    end
+  end
+
+  -- Draw the bulbz
+  for _, boy in ipairs(AllBulbz) do
     if boy ~= nil then
       boy:draw()
     end
