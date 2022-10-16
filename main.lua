@@ -4,7 +4,6 @@ Object = require("classic")
 Tiled = require("tiled")
 require "collisions"
 require "environment"
--- require "boundaries"
 require "categories"
 require "boy"
 require "bulb"
@@ -12,8 +11,15 @@ require "bulb"
 
 function love.load()
   ---@TODO
-  --- 1. set inertia on bodies
-  --- 2. scale bulb to size
+  --- 1. Add ladder behaviour
+  --- 2. Add win condition
+  --- 3. Create main menu UI before game
+  --- 4. Create main menu UI before game
+  --- 5. Sounds
+  --- 6. Animations
+  --- 7. Create levels system
+  --- 8. Look in to setting inertia on bodies
+  --- 9. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
   -- love.graphics.setDefaultFilter("nearest", "nearest")
@@ -26,8 +32,6 @@ function love.load()
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact)
   Background = love.graphics.newImage("assets/img/background.png")
-  -- World boundaries (ceiling, walls, and floor)
-  -- Walls = Boundaries(ENVIRONMENT, World)
   -- Choreboyz box (dispenses new boyz)
   require "box"
   require "ball"
