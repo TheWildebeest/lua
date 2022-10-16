@@ -3,7 +3,7 @@ Bulb = Object:extend()
 -- Static properties/methods
 
 Bulb.width = love.physics:getMeter() * 1
-Bulb.height = love.physics:getMeter() * 1.4
+Bulb.vertices = {150,0, 250,200, 250,300, 150,350, 100,350, 0,300, 0,200, 100,0}
 
 -- `Static`
 Bulb.initBody = function (world, x, y)
@@ -11,15 +11,19 @@ Bulb.initBody = function (world, x, y)
 end
 
 -- `Static`
-Bulb.initShape = function ()
-  return love.physics.newRectangleShape(Bulb.width, Bulb.height)
+Bulb.initShape = function (scale)
+  local vertices = table.map(function (x) return x * scale end, Bulb.vertices)
+  local polygon = love.physics.newPolygonShape(unpack(vertices))
+  return polygon
 end
 
 function Bulb:init(world, x, y)
-
+  self.image = love.graphics.newImage("assets/img/bulb/1.png")
+  self.scale = Bulb.width / self.image:getWidth()
   self.body = Bulb.initBody(world, x, y)
-  self.shape = Bulb.initShape()
+  self.shape = Bulb.initShape(self.scale)
   self.fixture = love.physics.newFixture(self.body, self.shape)
+  print('Bulb scale: ', self.scale)
   -- self.fixture:setRestitution(0) -- let the ball bounce
   self.fixture:setDensity(0)
   -- self.body:setMass(0.1)
@@ -41,7 +45,6 @@ function Bulb:new(world, x, y)
   self:init(world, x, y)
   self.base_color = { math.random(), math.random(), math.random() }
   self.color = self.base_color
-  self.image = love.graphics.newImage("assets/img/bulb/1.png")
 end
 
 function Bulb:update(dt)
@@ -51,6 +54,10 @@ function Bulb:update(dt)
   end
 
   if self:isOnSurface() and self.y_velocity > 0 then
+    self:stopVerticalMotion()
+  end
+
+  if self:isBeneathSurface() and self.y_velocity < 0 then
     self:stopVerticalMotion()
   end
 
@@ -80,13 +87,13 @@ function Bulb:applyGravity(dt)
 end
 
 function Bulb:draw()
+  love.graphics.setColor({ 0.8, 0.8, 1, 0.2 })
+
+  local x, y = self.body:getWorldCenter()
+  love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+
   love.graphics.setColor({ 1, 1, 1 })
-
-  local x, y = self.body:getPosition()
-  local scale_x = Bulb.width / self.image:getWidth()
-  local scale_y = Bulb.height / self.image:getHeight()
-
-  love.graphics.draw(self.image, x, y, 0, scale_x, scale_y, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+  love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
 end
 
 function Bulb:keypressed()
@@ -100,7 +107,7 @@ function Bulb:beginContact(a, b, contact)
   table.insert(self.collisions, coll)
 
   -- If the bulb has landed on a surface, reset y velocity to 0
-  if IsAbove(a, b, self.fixture, normal_y) then
+  if IsAbove(a, b, self.fixture, normal_y) or IsTouchingStationaryObject(a, b, self.fixture, normal_y) then
     self:stopVerticalMotion()
   end
 
@@ -140,6 +147,20 @@ function Bulb:isOnSurface()
   end
   
   return on_top
+  
+end
+
+function Bulb:isBeneathSurface()
+
+  local beneath = false
+
+  for _, collision in ipairs(self.collisions) do
+    if IsBeneath(self.fixture, collision.fixture_a, collision.fixture_b, collision.normal_y) then
+      beneath = true
+    end
+  end
+  
+  return beneath
   
 end
 

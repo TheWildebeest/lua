@@ -1,4 +1,5 @@
 io.stdout:setvbuf("no")
+require "util"
 Object = require("classic")
 Tiled = require("tiled")
 require "collisions"
@@ -10,6 +11,11 @@ require "bulb"
 
 
 function love.load()
+  ---@TODO
+  --- 1. set inertia on bodies
+  --- 2. scale bulb to size
+  --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
+
   -- love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
@@ -62,9 +68,9 @@ function love.draw()
   end
 
   -- Draw the bulbz
-  for _, boy in ipairs(AllBulbz) do
-    if boy ~= nil then
-      boy:draw()
+  for _, bulb in ipairs(AllBulbz) do
+    if bulb ~= nil then
+      bulb:draw()
     end
   end
 

@@ -23,6 +23,7 @@ Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
 
 function Boy:init(environment, world)
 
+  self.image = love.graphics.newImage("assets/img/boy/1.png")
   self.body = Boy.initBody(environment, world)
   self.shape = Boy.initShape()
   self.fixture = love.physics.newFixture(self.body, self.shape)
@@ -35,6 +36,7 @@ function Boy:init(environment, world)
   self.jump_strength = 900
   self.acceleration = 4000
   self.friction = 3500
+  self.scale = Boy.width / self.image:getWidth()
 
   self.body:setFixedRotation(true)
   self.fixture:setCategory(Categories.LIVEBOY)
@@ -46,7 +48,6 @@ function Boy:new(environment, world)
   self.base_color = { math.random(), math.random(), math.random() }
   self.highlight_color = Boy.default_highlight_color
   self.color = self.base_color
-  self.image = love.graphics.newImage("assets/img/boy/1.png")
 end
 
 function Boy:update(dt)
@@ -57,13 +58,17 @@ function Boy:update(dt)
     self:move(dt)
   end
 
+  if self:isOnSurface() and self.y_velocity > 0 then
+    self:stopVerticalMotion()
+  end
+
+  if self:isBeneathSurface() and self.y_velocity < 0 then
+    self:stopVerticalMotion()
+  end
+
   -- Apply gravity to all airborne sprites
   if not self:isOnSurface() then
     self:applyGravity(dt)
-  end
-
-  if self:isOnSurface() and self.y_velocity > 0 then
-    self:stopVerticalMotion()
   end
 
   -- Apply friction to all sprites
@@ -128,10 +133,9 @@ function Boy:draw()
   love.graphics.setColor({ 1, 1, 1 })
 
   local x, y = self.body:getPosition()
-  local scale_x = Boy.width / self.image:getWidth()
-  local scale_y = Boy.height / self.image:getHeight()
 
-  love.graphics.draw(self.image, x, y, 0, scale_x, scale_y, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+
+  love.graphics.draw(self.image, x, y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
@@ -176,8 +180,8 @@ function Boy:beginContact(a, b, contact)
   local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
   table.insert(self.collisions, coll)
 
-  -- If the player has landed, reset y velocity to 0
-  if IsAbove(a, b, self.fixture, normal_y) then
+  -- If the player has landed on a surface, reset y velocity to 0
+  if IsAbove(a, b, self.fixture, normal_y) or IsTouchingStationaryObject(a, b, self.fixture, normal_y) then
     self:stopVerticalMotion()
   end
 
@@ -219,6 +223,20 @@ function Boy:isOnSurface()
   end
   
   return on_top
+  
+end
+
+function Boy:isBeneathSurface()
+
+  local beneath = false
+
+  for _, collision in ipairs(self.collisions) do
+    if IsBeneath(self.fixture, collision.fixture_a, collision.fixture_b, collision.normal_y) then
+      beneath = true
+    end
+  end
+  
+  return beneath
   
 end
 

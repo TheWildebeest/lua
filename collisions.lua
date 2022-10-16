@@ -55,6 +55,14 @@ function IsAbove(object, fixture_a, fixture_b, normal_y)
   end
 end
 
+function IsTouchingStationaryObject(object, fixture_a, fixture_b, normal_y)
+  if fixture_a == object then
+    return fixture_b:getBody():getLinearVelocity() == 0
+  elseif fixture_b == object then
+    return fixture_a:getBody():getLinearVelocity() == 0
+  end
+end
+
 function IsBeneath(object, fixture_a, fixture_b, normal_y)
   if fixture_a == object then
     return normal_y < 0
