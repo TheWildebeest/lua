@@ -4,6 +4,9 @@ Boy = Object:extend()
 
 Boy.width = love.physics:getMeter() * 2.5
 Boy.height = love.physics:getMeter() * 5
+Boy.default_base_color = { 0.20, 0.20, 0.20 }
+Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
+Boy.gravity = 2000
 
 -- `Static`
 Boy.initBody = function (environment, world)
@@ -15,11 +18,6 @@ Boy.initShape = function ()
   return love.physics.newRectangleShape(Boy.width, Boy.height)
 end
 
--- `Static`
-Boy.default_base_color = { 0.20, 0.20, 0.20 }
-
--- `Static`
-Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
 
 function Boy:init(environment, world)
 
@@ -31,8 +29,8 @@ function Boy:init(environment, world)
 
   self.x_velocity = 0
   self.y_velocity = 100
-  self.gravity = 1500
-  self.max_speed = 200
+  self.gravity = Boy.gravity
+  self.max_speed = 600
   self.jump_strength = 900
   self.acceleration = 4000
   self.friction = 3500
@@ -125,7 +123,7 @@ end
 function Boy:changeLightbulb()
   print('Changing the lightbulb!')
   local x, y = self.body:getPosition()
-  table.insert(AllBulbz, Bulb(World, x, y - 20))
+  table.insert(AllBulbz, Bulb(World, x + 50, y))
 end
 
 
@@ -146,6 +144,7 @@ function Boy:keypressed(key, _, isrepeat)
     if key == "x" then
       if not isrepeat then
         self.fixture:setCategory(Categories.DEADBOY)
+        self.fixture:setSensor(true)
       end
     end
 
@@ -180,12 +179,11 @@ function Boy:beginContact(a, b, contact)
   local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
   table.insert(self.collisions, coll)
 
-  -- If the player has landed on a surface, reset y velocity to 0
-  if IsAbove(a, b, self.fixture, normal_y) or IsTouchingStationaryObject(a, b, self.fixture, normal_y) then
-    self:stopVerticalMotion()
-  end
+  -- Determine whether the player has changed state from being on a ladder or not on a ladder
+  self:contactStartLadderCheck(self.fixture, a, b)
 
-  -- If the player touches
+  -- Check whether the player has landed
+  self:checkHasLanded(self.fixture, a, b, normal_y)
 
 end
 
@@ -193,18 +191,28 @@ function Boy:endContact(a, b, contact)
   print("endContact")
 
   local index = nil
+  local ladder_collisions = 0
 
   for i, collision_data in ipairs(self.collisions) do
-    if a == collision_data.fixture_a and b == collision_data.fixture_b then
-      index = i
-    elseif a == collision_data.fixture_b and b == collision_data.fixture_a then
+    local category_a = collision_data.fixture_a:getCategory()
+    local category_b = collision_data.fixture_b:getCategory()
+
+    if (category_a == Categories.DEADBOY) or (category_b == Categories.DEADBOY) then
+      ladder_collisions = ladder_collisions + 1
+    end
+
+    if (a == collision_data.fixture_a and b == collision_data.fixture_b) or (a == collision_data.fixture_b and b == collision_data.fixture_a)
+    then
       index = i
     end
+
   end
 
-  if index then
-    table.remove(self.collisions, index)
-  end
+  if IsLadderCollision(self.fixture, a, b) then ladder_collisions = ladder_collisions - 1 end
+
+  if index then table.remove(self.collisions, index) end
+
+  if ladder_collisions == 0 then self.gravity = Boy.gravity end
 
 end
 
@@ -238,6 +246,27 @@ function Boy:isBeneathSurface()
   
   return beneath
   
+end
+
+function Boy:contactStartLadderCheck(object, a, b)
+  print('updateLadderState called')
+  -- Has the player just come into contact with a ladder? (Coming ON to a ladder)
+  if (IsLadderCollision(object, a, b)) then
+    print('Colliding with ladder!')
+    print('Current gravity: ', self.gravity)
+    if self.gravity ~= 0 then
+      self:stopVerticalMotion()
+      self.gravity = 0
+    end
+  end
+end
+
+function Boy:checkHasLanded(object, a, b, normal_y)
+  -- Has the player just come into contact with the floor or is on top of a stationary object? (Coming OFF of a ladder)
+  if (not IsLadderCollision) and IsStationaryObjectCollision(object, a, b) and (IsAbove(object, a, b, normal_y)) then
+    self:stopVerticalMotion()
+    self.gravity = Boy.gravity
+  end
 end
 
 -- function Boy:hasLanded()

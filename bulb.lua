@@ -107,7 +107,7 @@ function Bulb:beginContact(a, b, contact)
   table.insert(self.collisions, coll)
 
   -- If the bulb has landed on a surface, reset y velocity to 0
-  if IsAbove(a, b, self.fixture, normal_y) or IsTouchingStationaryObject(a, b, self.fixture, normal_y) then
+  if IsAbove(a, b, self.fixture, normal_y) or IsStationaryObjectCollision(a, b, self.fixture) then
     self:stopVerticalMotion()
   end
 
