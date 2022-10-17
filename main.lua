@@ -11,7 +11,7 @@ require "bulb"
 
 function love.load()
   ---@TODO
-  --- 1. Add ladder behaviour
+  --- 1. Add ladder behaviour - 70% there!
   --- 2. Add win condition
   --- 3. Create main menu UI before game
   --- 4. Create main menu UI before game
