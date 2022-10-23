@@ -48,10 +48,11 @@ function PostSolve(a, b, collision, normalimpulse, tangentimpulse)
 end
 
 function IsAbove(object, fixture_a, fixture_b, normal_y)
+  local rounded_normal_y = math.round(normal_y)
   if fixture_a == object then
-    return normal_y > 0
+    return rounded_normal_y > 0
   elseif fixture_b == object then
-    return normal_y < 0
+    return rounded_normal_y < 0
   end
 end
 
@@ -74,10 +75,11 @@ end
 
 
 function IsBeneath(object, fixture_a, fixture_b, normal_y)
+  local rounded_normal_y = math.round(normal_y)
   if fixture_a == object then
-    return normal_y < 0
+    return rounded_normal_y < 0
   elseif fixture_b == object then
-    return normal_y > 0
+    return rounded_normal_y > 0
   end
 end
 

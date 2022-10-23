@@ -35,6 +35,8 @@ function Boy:init(environment, world)
   self.acceleration = 4000
   self.friction = 3500
   self.scale = Boy.width / self.image:getWidth()
+  self.x_position_override = nil
+  self.y_position_override = nil
 
   self.body:setFixedRotation(true)
   self.fixture:setCategory(Categories.LIVEBOY)
@@ -50,28 +52,59 @@ end
 
 function Boy:update(dt)
   local category = self.fixture:getCategory()
+  local is_on_surface = self:isOnSurface()
+  local is_beneath_surface = self:isBeneathSurface()
+  local is_on_ladder = self:isOnLadder()
 
-  -- Only apply movement to the player sprite
+  -- Only apply movement if this instance is the player sprite
   if category == Categories.LIVEBOY then
     self:move(dt)
   end
 
-  if self:isOnSurface() and self.y_velocity > 0 then
+  if category == Categories.DEADBOY then
+    if is_on_ladder or is_on_surface then
+      self.fixture:setSensor(true)
+    end
+  end
+
+
+  if (
+    is_on_surface and
+    self.y_velocity > 0
+  ) then
     self:stopVerticalMotion()
   end
 
-  if self:isBeneathSurface() and self.y_velocity < 0 then
+  if (
+    is_beneath_surface and
+    self.y_velocity < 0
+  ) then
     self:stopVerticalMotion()
   end
 
-  -- Apply gravity to all airborne sprites
-  if not self:isOnSurface() then
-    self:applyGravity(dt)
+  -- Apply gravity to sprite if airborne
+  if (
+    (not is_on_surface)
+    -- (not is_on_ladder)
+    ) then
+      self:applyGravity(dt)
   end
 
   -- Apply friction to all sprites
   self:applyFriction(dt)
   self.body:setLinearVelocity(self.x_velocity, self.y_velocity)
+
+  -- If there are overrides in place for x and y position, move player back there and then reset to nil
+  if self.x_position_override then
+    self.body:setX(self.x_position_override)
+    self.x_position_override = nil
+  end
+
+  if self.y_position_override then
+    self.body:setY(self.y_position_override)
+    self.y_position_override = nil
+  end
+
 end
 
 function Boy:move(dt)
@@ -117,7 +150,19 @@ function Boy:applyFriction(dt)
 end
 
 function Boy:applyGravity(dt)
-  self.y_velocity = self.y_velocity + self.gravity * dt
+  if (self:isOnLadder() and self.y_velocity < 0) then
+
+    if self.y_velocity + Boy.gravity* dt >= 0 then
+      self.y_velocity = 0
+    else
+      self.y_velocity = self.y_velocity + Boy.gravity * dt
+    end
+    
+  else
+
+    self.y_velocity = self.y_velocity + self.gravity * dt
+
+  end
 end
 
 function Boy:changeLightbulb()
@@ -144,14 +189,19 @@ function Boy:keypressed(key, _, isrepeat)
     if key == "x" then
       if not isrepeat then
         self.fixture:setCategory(Categories.DEADBOY)
-        self.fixture:setSensor(true)
+        -- if self:isOnSurface() or self:isOnLadder() then
+        --   self.fixture:setSensor(true)
+        -- end
       end
     end
 
     if key == "space" then
-      print("Y velocity: "..self.y_velocity)
       if not isrepeat then
         if self:isOnSurface() then
+          print('is on surface')
+          self.y_velocity = -self.jump_strength
+        elseif self:isOnLadder() then
+          print('is on ladder')
           self.y_velocity = -self.jump_strength
         end
       end
@@ -174,21 +224,23 @@ function Boy:reset(environment, world)
 end
 
 function Boy:beginContact(a, b, contact)
-  print("beginContact")
+  local x, y = self.body:getPosition()
+  self.x_position_override = x
+  self.y_position_override = y
   local normal_x, normal_y = contact:getNormal()
   local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
+  local is_player = self.fixture:getCategory() == Categories.LIVEBOY
   table.insert(self.collisions, coll)
 
   -- Determine whether the player has changed state from being on a ladder or not on a ladder
   self:contactStartLadderCheck(self.fixture, a, b)
 
   -- Check whether the player has landed
-  self:checkHasLanded(self.fixture, a, b, normal_y)
+  self:checkHasLanded(self.fixture, a, b, normal_y, is_player)
 
 end
 
 function Boy:endContact(a, b, contact)
-  print("endContact")
 
   local index = nil
   local ladder_collisions = 0
@@ -217,6 +269,7 @@ function Boy:endContact(a, b, contact)
 end
 
 function Boy:stopVerticalMotion()
+  print('stopping vertical motion')
   self.y_velocity = 0
 end
 
@@ -229,9 +282,9 @@ function Boy:isOnSurface()
       on_top = true
     end
   end
-  
+
   return on_top
-  
+
 end
 
 function Boy:isBeneathSurface()
@@ -249,11 +302,8 @@ function Boy:isBeneathSurface()
 end
 
 function Boy:contactStartLadderCheck(object, a, b)
-  print('updateLadderState called')
   -- Has the player just come into contact with a ladder? (Coming ON to a ladder)
   if (IsLadderCollision(object, a, b)) then
-    print('Colliding with ladder!')
-    print('Current gravity: ', self.gravity)
     if self.gravity ~= 0 then
       self:stopVerticalMotion()
       self.gravity = 0
@@ -261,13 +311,46 @@ function Boy:contactStartLadderCheck(object, a, b)
   end
 end
 
-function Boy:checkHasLanded(object, a, b, normal_y)
+function Boy:checkHasLanded(object, a, b, normal_y, is_player)
   -- Has the player just come into contact with the floor or is on top of a stationary object? (Coming OFF of a ladder)
-  if (not IsLadderCollision) and IsStationaryObjectCollision(object, a, b) and (IsAbove(object, a, b, normal_y)) then
-    self:stopVerticalMotion()
-    self.gravity = Boy.gravity
+  print('Checking if has landed...')
+   if (IsAbove(object, a, b, normal_y)) then print('Is above: True. Normal_y: '..math.round(normal_y)) else print('Is above: False. Normal_y: '..math.round(normal_y)) end
+   if (IsStationaryObjectCollision(object, a, b)) then print('Is stationary object collision: True.') else print('Is stationary object collision: False.') end
+    
+  if (
+    (IsAbove(object, a, b, normal_y)) and
+    (IsStationaryObjectCollision(object, a, b))
+  ) then
+    if not is_player then
+      print('Landed.')
+      self:stopVerticalMotion()
+      self.gravity = Boy.gravity
+    end
+
+    if (is_player) and (not IsLadderCollision(object, a, b)) then
+      print('Landed.')
+      self:stopVerticalMotion()
+      self.gravity = Boy.gravity
+    end
+
+  else
+    print('Not landed.')
   end
 end
+
+function Boy:isOnLadder()
+
+  local on_ladder = false
+
+  for _, collision in ipairs(self.collisions) do
+    if IsLadderCollision(self.fixture, collision.fixture_a, collision.fixture_b) then
+      on_ladder = true
+    end
+  end
+
+  return on_ladder
+end
+
 
 -- function Boy:hasLanded()
 
