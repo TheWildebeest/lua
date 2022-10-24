@@ -32,7 +32,7 @@ function love.load()
   Map:box2d_init(World)
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact)
-  Background = love.graphics.newImage("assets/img/background.png")
+  Background = love.graphics.newImage("assets/img/background_1.png")
   -- Choreboyz box (dispenses new boyz)
   require "box"
   require "ball"
