@@ -10,16 +10,17 @@ require "bulb"
 
 
 function love.load()
-  ---@TODO
-  --- 1. Add ladder behaviour - 70% there!
-  --- 2. Add win condition
-  --- 3. Create main menu UI before game
-  --- 4. Create main menu UI before game
-  --- 5. Sounds
-  --- 6. Animations
-  --- 7. Create levels system
-  --- 8. Look in to setting inertia on bodies
-  --- 9. Smashable bulbs
+  ---
+  --- DONE! 1. Add ladder behaviour
+  --- @todo 2. Add win condition
+  --- Enough for CS50 completion ?
+  --- @todo 3. Create main menu UI before game
+  --- @todo 4. Create main menu UI before game
+  --- @todo 5. Sounds
+  --- @todo 6. Animations
+  --- @todo 7. Create levels system
+  --- @todo 8. Look in to setting inertia on bodies
+  --- @todo 9. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
   -- love.graphics.setDefaultFilter("nearest", "nearest")
