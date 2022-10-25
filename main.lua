@@ -6,13 +6,15 @@ require "collisions"
 require "environment"
 require "categories"
 require "boy"
+print(Boy)
 require "bulb"
-
+print(Bulb)
+require "bulb_socket"
 
 function love.load()
   ---
   --- DONE! 1. Add ladder behaviour
-  --- @todo 2. Add win condition
+  --- @todo 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
   --- Enough for CS50 completion ?
   --- @todo 3. Create main menu UI before game
   --- @todo 4. Create main menu UI before game
@@ -32,7 +34,7 @@ function love.load()
   Map:box2d_init(World)
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact)
-  Background = love.graphics.newImage("assets/img/background_1.png")
+  Background = love.graphics.newImage("assets/img/background_4.png")
   -- Choreboyz box (dispenses new boyz)
   require "box"
   require "ball"
@@ -40,6 +42,8 @@ function love.load()
   AllBoyz = { }
   -- Table to hold AllBulbz
   AllBulbz = { }
+
+  SOCKET = Socket(ENVIRONMENT, World)
 end
 
 
@@ -57,6 +61,7 @@ function love.update(dt)
   Box.update(dt)
   Ball.update(dt)
   Map:update(dt)
+  SOCKET:update(dt)
 end
 
 function love.draw()
@@ -84,6 +89,9 @@ function love.draw()
   love.graphics.rectangle("fill", ENVIRONMENT.wall_thickness, ENVIRONMENT.wall_thickness, Box.size, Box.size)
   love.graphics.setColor(1, 1, 1)
   love.graphics.draw(Box.text, ENVIRONMENT.wall_thickness + (Box.size / 2), ENVIRONMENT.wall_thickness + (Box.size / 2), 0.25, 1, 1, Box.text:getWidth() / 2, Box.text:getHeight() / 2)
+
+  -- Draw the bulb socket
+  SOCKET:draw()
 end
 
 function love.keypressed(key, _, isrepeat)
