@@ -1,17 +1,23 @@
 io.stdout:setvbuf("no")
-require "util"
+
 Object = require("classic")
 Tiled = require("tiled")
+
+
+require "util"
 require "collisions"
 require "environment"
 require "categories"
 require "boy"
-print(Boy)
 require "bulb"
-print(Bulb)
 require "bulb_socket"
 
+
+
 function love.load()
+
+  WIN = false
+
   ---
   --- DONE! 1. Add ladder behaviour
   --- @todo 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
@@ -25,7 +31,7 @@ function love.load()
   --- @todo 9. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
-  -- love.graphics.setDefaultFilter("nearest", "nearest")
+  love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
   love.physics.setMeter(ENVIRONMENT.meter)
@@ -36,8 +42,11 @@ function love.load()
   World:setCallbacks(BeginContact, EndContact)
   Background = love.graphics.newImage("assets/img/background_4.png")
   -- Choreboyz box (dispenses new boyz)
-  require "box"
-  require "ball"
+  Box = { size = ENVIRONMENT.screen_width * 0.1, color = { 0.1, 0.3, 0.5 }, text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 20), "CHOREBOYZ") }
+  Box.update = function (dt)
+    if love.keyboard.isDown("x") then Box.color = { 0.1, 0.3, 0.5 } else Box.color = { 0.5, 0.3, 0.1 } end
+  end
+
   -- Table to hold AllBoyz
   AllBoyz = { }
   -- Table to hold AllBulbz
@@ -59,39 +68,51 @@ function love.update(dt)
   end
 
   Box.update(dt)
-  Ball.update(dt)
+  if Ball then
+    Ball.update(dt)
+  end
   Map:update(dt)
-  SOCKET:update(dt)
+  -- SOCKET:update(dt)
 end
 
 function love.draw()
-  love.graphics.draw(Background)
-  -- Walls:draw()
-  Ball.draw()
-  Map:draw(0, 0, 1, 1)
-  
-  -- Draw the choreboyz
-  for _, boy in ipairs(AllBoyz) do
-    if boy ~= nil then
-      boy:draw()
+  if WIN then
+    local win_text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 100), "OMG YOU TOTALLY WON!!!")
+    love.graphics.draw(Background)
+    love.graphics.setColor(unpack({ 0.5, 0.3, 0.1 }))
+    love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0.25, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
+  else
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(Background)
+    -- Walls:draw()
+    if Ball then
+      Ball.draw()
     end
-  end
-
-  -- Draw the bulbz
-  for _, bulb in ipairs(AllBulbz) do
-    if bulb ~= nil then
-      bulb:draw()
+    Map:draw(0, 0, 1, 1)
+    
+    -- Draw the choreboyz
+    for _, boy in ipairs(AllBoyz) do
+      if boy ~= nil then
+        boy:draw()
+      end
     end
+
+    -- Draw the bulbz
+    for _, bulb in ipairs(AllBulbz) do
+      if bulb ~= nil then
+        bulb:draw()
+      end
+    end
+
+    -- Draw choreboyz box and text
+    love.graphics.setColor(unpack(Box.color))
+    love.graphics.rectangle("fill", ENVIRONMENT.wall_thickness, ENVIRONMENT.wall_thickness, Box.size, Box.size)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(Box.text, ENVIRONMENT.wall_thickness + (Box.size / 2), ENVIRONMENT.wall_thickness + (Box.size / 2), 0.25, 1, 1, Box.text:getWidth() / 2, Box.text:getHeight() / 2)
+
+    -- Draw the bulb socket
+    SOCKET:draw()
   end
-
-  -- Draw choreboyz box and text
-  love.graphics.setColor(unpack(Box.color))
-  love.graphics.rectangle("fill", ENVIRONMENT.wall_thickness, ENVIRONMENT.wall_thickness, Box.size, Box.size)
-  love.graphics.setColor(1, 1, 1)
-  love.graphics.draw(Box.text, ENVIRONMENT.wall_thickness + (Box.size / 2), ENVIRONMENT.wall_thickness + (Box.size / 2), 0.25, 1, 1, Box.text:getWidth() / 2, Box.text:getHeight() / 2)
-
-  -- Draw the bulb socket
-  SOCKET:draw()
 end
 
 function love.keypressed(key, _, isrepeat)

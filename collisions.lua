@@ -16,6 +16,10 @@ function BeginContact(a, b, collision)
     end
   end
 
+  if a == SOCKET.fixture or b == SOCKET.fixture then
+    SOCKET:beginContact(a, b, collision)
+  end
+
 end
 
 function EndContact(a, b, collision)

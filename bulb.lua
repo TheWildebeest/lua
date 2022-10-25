@@ -23,7 +23,7 @@ function Bulb:init(world, x, y)
   self.body = Bulb.initBody(world, x, y)
   self.shape = Bulb.initShape(self.scale)
   self.fixture = love.physics.newFixture(self.body, self.shape)
-  print('Bulb scale: ', self.scale)
+  -- print('Bulb scale: ', self.scale)
   -- self.fixture:setRestitution(0) -- let the ball bounce
   self.fixture:setDensity(0)
   -- self.body:setMass(0.1)
@@ -101,7 +101,7 @@ function Bulb:keypressed()
 end
 
 function Bulb:beginContact(a, b, contact)
-  print("beginContact")
+  -- print("beginContact")
   local normal_x, normal_y = contact:getNormal()
   local coll = { fixture_a = a, fixture_b = b, normal_x = normal_x, normal_y = normal_y }
   table.insert(self.collisions, coll)
@@ -114,7 +114,7 @@ function Bulb:beginContact(a, b, contact)
 end
 
 function Bulb:endContact(a, b, contact)
-  print("endContact")
+  -- print("endContact")
 
   local index = nil
 

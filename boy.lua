@@ -62,8 +62,19 @@ function Boy:update(dt)
   end
 
   if category == Categories.DEADBOY then
-    if is_on_ladder or is_on_surface then
-      self.fixture:setSensor(true)
+    if (is_on_ladder or is_on_surface) then
+      if not self.fixture:isSensor() then
+        self.gravity = 0
+        self.fixture:setSensor(true)
+      end
+    end
+
+    if not (is_on_ladder or is_on_surface) then
+      if self.fixture:isSensor() then
+        self.gravity = Boy.gravity
+        self.y_velocity = -self.jump_strength * 0.3
+        self.fixture:setSensor(false)
+      end
     end
   end
 
@@ -166,7 +177,7 @@ function Boy:applyGravity(dt)
 end
 
 function Boy:changeLightbulb()
-  print('Changing the lightbulb!')
+  -- print('Changing the lightbulb!')
   local x, y = self.body:getPosition()
   table.insert(AllBulbz, Bulb(World, x + 50, y))
 end
@@ -208,7 +219,7 @@ function Boy:keypressed(key, _, isrepeat)
     end
 
     if key == "e" then
-      print("Pressing E ")
+      -- print("Pressing E ")
       if not isrepeat then
         self:changeLightbulb()
       end
