@@ -8,13 +8,26 @@ Boy.default_base_color = { 0.20, 0.20, 0.20 }
 Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
 Boy.gravity = 2000
 Boy.images = {
-  idle = love.graphics.newImage("assets/img/boy/idle.png")
+  idle = love.graphics.newImage("assets/img/boy/idle_new.png"),
+  walking = love.graphics.newImage("assets/img/boy/walking.png")
 }
 
 Boy.sprites = {
   idle = {
-    [1] = love.graphics.newQuad(2,    2, 1498, 2998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [2] = love.graphics.newQuad(1502, 2, 1498, 2998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [5] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [6] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
+  },
+  walking = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
   }
 }
 
@@ -46,7 +59,7 @@ function Boy:init(environment, world)
   self.jump_strength = 900
   self.acceleration = 4000
   self.friction = 3500
-  self.scale = (Boy.width / self.images.idle:getWidth()) * 2
+  self.scale = (Boy.width / self.images.idle:getHeight()) * 2
   self.x_position_override = nil
   self.y_position_override = nil
 
@@ -63,8 +76,8 @@ function Boy:new(environment, world)
 end
 
 function Boy:update(dt)
-  self.spriteFrameRef = self.spriteFrameRef + (7 * dt)
-  if self.spriteFrameRef >= 3 then self.spriteFrameRef = 1 end
+  self.spriteFrameRef = self.spriteFrameRef + (5 * dt)
+  if self.spriteFrameRef >= 7 then self.spriteFrameRef = 1 end
   local category = self.fixture:getCategory()
   local is_on_surface = self:isOnSurface()
   local is_beneath_surface = self:isBeneathSurface()
@@ -134,8 +147,14 @@ end
 
 function Boy:move(dt)
 
+  local walking = false
+  local direction = ''
+
   -- Move right
   if love.keyboard.isDown("d", "right") then
+
+    walking = true
+    direction = 'r'
 
     if self.x_velocity < self.max_speed then
       if self.x_velocity + self.acceleration * dt < self.max_speed then
@@ -147,6 +166,10 @@ function Boy:move(dt)
 
   -- Move left
   elseif love.keyboard.isDown("a", "left") then
+
+    walking = true
+    direction = 'l'
+
     if self.x_velocity > -self.max_speed then
       if self.x_velocity - self.acceleration * dt > -self.max_speed then
         self.x_velocity = self.x_velocity - self.acceleration * dt
@@ -155,6 +178,8 @@ function Boy:move(dt)
       end
     end
   end
+
+  if walking then self.spriteState = 'walking' else self.spriteState = 'idle' end
 
 end
 
@@ -203,7 +228,7 @@ function Boy:draw()
   local x, y = self.body:getPosition()
 
 
-  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, self.scale, self.scale, self.images[self.spriteState]:getWidth() / 4, self.images[self.spriteState]:getHeight() / 2, 0, 0)
+  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, self.scale, self.scale, self.images[self.spriteState]:getWidth() / 6 / 2, self.images[self.spriteState]:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
