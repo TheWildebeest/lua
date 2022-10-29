@@ -7,6 +7,17 @@ Boy.height = love.physics:getMeter() * 5
 Boy.default_base_color = { 0.20, 0.20, 0.20 }
 Boy.default_highlight_color = { 0.5, 0.3, 0.1 }
 Boy.gravity = 2000
+Boy.images = {
+  idle = love.graphics.newImage("assets/img/boy/idle.png")
+}
+
+Boy.sprites = {
+  idle = {
+    [1] = love.graphics.newQuad(2,    2, 1498, 2998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [2] = love.graphics.newQuad(1502, 2, 1498, 2998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
+  }
+}
+
 
 -- `Static`
 Boy.initBody = function (environment, world)
@@ -21,7 +32,8 @@ end
 
 function Boy:init(environment, world)
 
-  self.image = love.graphics.newImage("assets/img/boy/1.png")
+  self.spriteState = 'idle'
+  self.spriteFrameRef = 1
   self.body = Boy.initBody(environment, world)
   self.shape = Boy.initShape()
   self.fixture = love.physics.newFixture(self.body, self.shape)
@@ -34,7 +46,7 @@ function Boy:init(environment, world)
   self.jump_strength = 900
   self.acceleration = 4000
   self.friction = 3500
-  self.scale = Boy.width / self.image:getWidth()
+  self.scale = (Boy.width / self.images.idle:getWidth()) * 2
   self.x_position_override = nil
   self.y_position_override = nil
 
@@ -51,6 +63,8 @@ function Boy:new(environment, world)
 end
 
 function Boy:update(dt)
+  self.spriteFrameRef = self.spriteFrameRef + (7 * dt)
+  if self.spriteFrameRef >= 3 then self.spriteFrameRef = 1 end
   local category = self.fixture:getCategory()
   local is_on_surface = self:isOnSurface()
   local is_beneath_surface = self:isBeneathSurface()
@@ -189,7 +203,7 @@ function Boy:draw()
   local x, y = self.body:getPosition()
 
 
-  love.graphics.draw(self.image, x, y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, self.scale, self.scale, self.images[self.spriteState]:getWidth() / 4, self.images[self.spriteState]:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)

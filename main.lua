@@ -40,7 +40,7 @@ function love.load()
   Map:box2d_init(World)
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact)
-  Background = love.graphics.newImage("assets/img/background_4.png")
+  Background = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
   -- Choreboyz box (dispenses new boyz)
   Box = { size = ENVIRONMENT.screen_width * 0.1, color = { 0.1, 0.3, 0.5 }, text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 20), "CHOREBOYZ") }
   Box.update = function (dt)
