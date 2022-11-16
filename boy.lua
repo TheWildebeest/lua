@@ -18,18 +18,23 @@ Boy.sprites = {
     [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
     [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
     [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [5] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [6] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
   },
   walking = {
     [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
     [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
     [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
     [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
     [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
   }
 }
+
+Boy.getFrameRate = function(speed, state)
+  if state == 'idle' then return 5 end
+  if state == 'walking' then return math.abs(speed) / 30 end
+end
 
 
 -- `Static`
@@ -76,8 +81,9 @@ function Boy:new(environment, world)
 end
 
 function Boy:update(dt)
-  self.spriteFrameRef = self.spriteFrameRef + (5 * dt)
-  if self.spriteFrameRef >= 7 then self.spriteFrameRef = 1 end
+  local frame_rate = Boy.getFrameRate(self.x_velocity, self.spriteState)
+  self.spriteFrameRef = self.spriteFrameRef + (frame_rate * dt)
+  if self.spriteFrameRef > (#(Boy.sprites[self.spriteState]) + 1) then self.spriteFrameRef = 1 end
   local category = self.fixture:getCategory()
   local is_on_surface = self:isOnSurface()
   local is_beneath_surface = self:isBeneathSurface()
