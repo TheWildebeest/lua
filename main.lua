@@ -3,7 +3,7 @@ io.stdout:setvbuf("no")
 Object = require("classic")
 Tiled = require("tiled")
 
-
+require "menu"
 require "util"
 require "collisions"
 require "environment"
@@ -12,15 +12,16 @@ require "boy"
 require "bulb"
 require "bulb_socket"
 
-
-
 function love.load()
 
+  MENU = false
   WIN = false
+
+  BoxFont = love.graphics.newFont("assets/box.ttf", 20)
 
   ---
   --- DONE! 1. Add ladder behaviour
-  --- @todo 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
+  --- DONE 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
   --- Enough for CS50 completion ?
   --- @todo 3. Create main menu UI before game
   --- @todo 4. Create main menu UI before game
@@ -30,7 +31,7 @@ function love.load()
   --- @todo 8. Look in to setting inertia on bodies
   --- @todo 9. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
-
+  Menu:load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
@@ -42,7 +43,7 @@ function love.load()
   World:setCallbacks(BeginContact, EndContact)
   Background = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
   -- Choreboyz box (dispenses new boyz)
-  Box = { size = ENVIRONMENT.screen_width * 0.1, color = { 0.1, 0.3, 0.5 }, text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 20), "CHOREBOYZ") }
+  Box = { size = ENVIRONMENT.screen_width * 0.1, color = { 0.1, 0.3, 0.5 }, text = love.graphics.newText(BoxFont, "CHOREBOYZ") }
   Box.update = function (dt)
     if love.keyboard.isDown("x") then Box.color = { 0.1, 0.3, 0.5 } else Box.color = { 0.5, 0.3, 0.1 } end
   end
@@ -57,6 +58,7 @@ end
 
 
 function love.update(dt)
+  Menu:update()
   ENVIRONMENT:update(dt, love.graphics.getWidth(), love.graphics.getHeight())
   World:update(dt)
   for _, each in ipairs(AllBoyz) do
@@ -81,6 +83,7 @@ function love.draw()
     love.graphics.draw(Background)
     love.graphics.setColor(unpack({ 0.5, 0.3, 0.1 }))
     love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0.25, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
+  elseif MENU then Menu:draw()
   else
     love.graphics.setColor(1, 1, 1)
     love.graphics.draw(Background)
