@@ -12,12 +12,24 @@ require "boy"
 require "bulb"
 require "bulb_socket"
 
-function love.load()
+-- Global state
+MENU = true
+WIN = false
 
+-- Global getters / setters
+function START_GAME()
   MENU = false
-  WIN = false
+end
 
-  BoxFont = love.graphics.newFont("assets/box.ttf", 20)
+function WIN_GAME()
+  WIN = true
+end
+
+function EXIT_GAME()
+  love.event.push("quit")
+end
+
+function love.load()
 
   ---
   --- DONE! 1. Add ladder behaviour
@@ -43,7 +55,12 @@ function love.load()
   World:setCallbacks(BeginContact, EndContact)
   Background = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
   -- Choreboyz box (dispenses new boyz)
-  Box = { size = ENVIRONMENT.screen_width * 0.1, color = { 0.1, 0.3, 0.5 }, text = love.graphics.newText(BoxFont, "CHOREBOYZ") }
+  Box = {
+    size = ENVIRONMENT.screen_width * 0.1,
+    color = { 0.1, 0.3, 0.5 },
+    font = love.graphics.newFont("assets/box.ttf", 20)
+  }
+  Box['text'] = love.graphics.newText(Box.font, "CHOREBOYZ")
   Box.update = function (dt)
     if love.keyboard.isDown("x") then Box.color = { 0.1, 0.3, 0.5 } else Box.color = { 0.5, 0.3, 0.1 } end
   end
@@ -137,7 +154,7 @@ function love.keypressed(key, _, isrepeat)
   end
 
   if key == "escape" then
-    love.event.push("quit")
+    EXIT_GAME()
   end
 end
 

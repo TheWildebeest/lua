@@ -1,84 +1,98 @@
+-- -- Requirements --
+require("buttons")
+Colors = require("colors")
+
+-- -- ------------ --
+local windowWidth = love.graphics.getWidth()
+local windowHeight = love.graphics.getHeight()
+local TitleFont = love.graphics.newFont("assets/box.ttf", 102, "normal", 50)
+local HeroImage = love.graphics.newImage('assets/img/boy/1.png')
+
 Menu = Object:extend()
 
-local function newButton(text, fn)
-  return {
-    text = text,
-    fn = fn
-  }
-end
-
 function Menu:load()
-  local startGame = newButton("Start game", function() print("starting game...") end)
-  local exitGame = newButton("Quit", function() print("qutting...") end)
 
-  Buttons = {}
+  Title =  {}
 
-  ButtonFontSmall = love.graphics.newFont("assets/menu.ttf", 75, "normal", 50)
-  ButtonFontLarge = love.graphics.newFont("assets/menu.ttf", 90, "normal", 50)
+  Title['text'] = "CHOREBOYZ!"
+  Title['font'] = TitleFont
+  Title['width'] = Title.font:getWidth(Title.text) 
+  Title['height'] = Title.font:getHeight(Title.text)
+  Title['x'] = (windowWidth * 0.5)
+  Title['y'] = (windowHeight * 0.4)
 
-  table.insert(Buttons, startGame)
-  table.insert(Buttons, exitGame)
-
-  Colors = {
-    brown =   {0.57, 0.55, 0.44},
-    yellow = {0.76, 0.77, 0.55}
+  local btnWidth = windowWidth * 0.33
+  Buttons = {
+    Button(
+      "Start game",
+      START_GAME,
+      windowWidth * 0.5 - (btnWidth * 0.5),
+      windowHeight * 0.7,
+      btnWidth,
+      windowHeight * 0.1
+    ),
+    Button(
+      "Quit",
+      EXIT_GAME,
+      windowWidth * 0.5 - (btnWidth * 0.5),
+      windowHeight * 0.85,
+      btnWidth,
+      windowHeight * 0.1
+    )
   }
 end
 
 function Menu:update(dt)
   if not MENU then return end
+  local mouseX, mouseY = love.mouse.getPosition()
+  local mouseDown = love.mouse.isDown(1)
+  for _, button in ipairs(Buttons) do
+    local hotX = mouseX > button.x and mouseX < button.x + button.width
+    local hotY = mouseY > button.y and mouseY < button.y + button.height
+    local isHot = hotX and hotY
+    button:update(isHot, mouseDown)
+  end
 end
 
 function Menu:draw()
   if not MENU then return end
-  local windowWidth = love.graphics.getWidth()
-  local windowHeight = love.graphics.getHeight()
-  local buttonWidth = windowWidth / 3
-  local buttonHeight = windowHeight / 10
-  local marginY = windowHeight / 20
-  local totalHeight = (buttonHeight * #Buttons) + (marginY * (#Buttons - 1))
 
   -- Draw background
   love.graphics.setColor(Colors.brown)
   love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
+  print(Title.x)
+
+  -- Draw main graphic
+  love.graphics.setColor(1,1,1, 0.3)
+  love.graphics.draw(
+    HeroImage,
+    windowWidth * 0.175,
+    windowHeight * 0.5,
+    0,
+    1.2,
+    1.2,
+    HeroImage:getWidth() * 1.2 * 0.5,
+    HeroImage:getHeight() * 1.2 * 0.4
+
+)
+
+
+  -- Draw title
+  love.graphics.setColor(Colors.green)
+  love.graphics.print(
+    Title.text,
+    Title.font,
+    Title.x,
+    Title.y,
+    0,
+    1,
+    1,
+    (Title.width / 2)
+  )
 
   -- Draw buttons
   for i, button in ipairs(Buttons) do
-    local buttonX = windowWidth / 2 - buttonWidth / 2
-    local buttonY = windowHeight / 2 - totalHeight / 2 + ((i - 1) * (buttonHeight + marginY))
-    local mouseX, mouseY = love.mouse.getPosition()
-    local hotX = mouseX > buttonX and mouseX < buttonX + buttonWidth
-    local hotY = mouseY > buttonY and mouseY < buttonY + buttonHeight
-    local hot = hotX and hotY
-
-
-    local font = ButtonFontSmall
-    local btnFillMode = "fill"
-    local btnTextColor = Colors.brown
-
-    if hot then
-      btnFillMode = "line"
-      btnTextColor = Colors.yellow
-      font = ButtonFontLarge
-    end
-    love.graphics.setColor(Colors.yellow)
-    love.graphics.rectangle(
-      btnFillMode,
-      buttonX,
-      buttonY,
-      buttonWidth,
-      buttonHeight
-    )
-
-    local textWidth = font:getWidth(button.text)
-    local textHeight = font:getHeight(button.text)
-    love.graphics.setColor(btnTextColor)
-    love.graphics.print(
-      button.text,
-      font,
-      buttonX + buttonWidth / 2 - textWidth / 2,
-      buttonY + buttonHeight / 2 - textHeight / 2
-    )
+    button:draw()
   end
 
 end
