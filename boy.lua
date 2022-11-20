@@ -75,15 +75,33 @@ end
 
 function Boy:new(environment, world)
   self:init(environment, world)
-  self.base_color = { math.random(), math.random(), math.random() }
-  self.highlight_color = Boy.default_highlight_color
-  self.color = self.base_color
 end
 
 function Boy:update(dt)
   local frame_rate = Boy.getFrameRate(self.x_velocity, self.spriteState)
-  self.spriteFrameRef = self.spriteFrameRef + (frame_rate * dt)
-  if self.spriteFrameRef > (#(Boy.sprites[self.spriteState]) + 1) then self.spriteFrameRef = 1 end
+  local current_frame = self.spriteFrameRef + (frame_rate * dt)
+
+  -- Movement SFX
+
+  -- if self.spriteState == 'walking' then
+  --   if math.floor(current_frame) == 1 then
+  --     Sounds.step_one:play()
+  --   end
+
+  --   if math.floor(current_frame) == 4 then
+  --     Sounds.step_two:play()
+  --   end
+  -- end
+
+  -- if self.spriteState == 'idle' then
+    
+  -- end
+
+  if current_frame > (#(Boy.sprites[self.spriteState]) + 1) then
+    self.spriteFrameRef = 1
+  else
+    self.spriteFrameRef = current_frame
+  end
   local category = self.fixture:getCategory()
   local is_on_surface = self:isOnSurface()
   local is_beneath_surface = self:isBeneathSurface()
@@ -154,13 +172,13 @@ end
 function Boy:move(dt)
 
   local walking = false
-  local direction = ''
+  local direction = 'forward'
 
   -- Move right
   if love.keyboard.isDown("d", "right") then
 
     walking = true
-    direction = 'r'
+    direction = 'right'
 
     if self.x_velocity < self.max_speed then
       if self.x_velocity + self.acceleration * dt < self.max_speed then
@@ -174,7 +192,7 @@ function Boy:move(dt)
   elseif love.keyboard.isDown("a", "left") then
 
     walking = true
-    direction = 'l'
+    direction = 'left'
 
     if self.x_velocity > -self.max_speed then
       if self.x_velocity - self.acceleration * dt > -self.max_speed then
@@ -186,6 +204,7 @@ function Boy:move(dt)
   end
 
   if walking then self.spriteState = 'walking' else self.spriteState = 'idle' end
+  self.direction = direction
 
 end
 
@@ -233,8 +252,13 @@ function Boy:draw()
 
   local x, y = self.body:getPosition()
 
+  local scale_x
+  if self.direction == 'left'    then scale_x = -self.scale end
+  if self.direction == 'right'   then scale_x = self.scale end
+  if self.direction == 'forward' then scale_x = self.scale end
 
-  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, self.scale, self.scale, self.images[self.spriteState]:getWidth() / 6 / 2, self.images[self.spriteState]:getHeight() / 2, 0, 0)
+
+  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, scale_x, self.scale, self.images[self.spriteState]:getWidth() / 6 / 2, self.images[self.spriteState]:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
@@ -244,6 +268,7 @@ function Boy:keypressed(key, _, isrepeat)
 
     if key == "x" then
       if not isrepeat then
+        self.spriteState = "idle"
         self.fixture:setCategory(Categories.DEADBOY)
         -- if self:isOnSurface() or self:isOnLadder() then
         --   self.fixture:setSensor(true)
@@ -361,6 +386,8 @@ function Boy:contactStartLadderCheck(object, a, b)
   -- Has the player just come into contact with a ladder? (Coming ON to a ladder)
   if (IsLadderCollision(object, a, b)) then
     if self.gravity ~= 0 then
+      local y_velocity = self.y_velocity
+      self:playLandingAudio(y_velocity)
       self:stopVerticalMotion()
       self.gravity = 0
     end
@@ -369,24 +396,25 @@ end
 
 function Boy:checkHasLanded(object, a, b, normal_y, is_player)
   -- Has the player just come into contact with the floor or is on top of a stationary object? (Coming OFF of a ladder)
-  print('Checking if has landed...')
-   if (IsAbove(object, a, b, normal_y)) then print('Is above: True. Normal_y: '..math.round(normal_y)) else print('Is above: False. Normal_y: '..math.round(normal_y)) end
-   if (IsStationaryObjectCollision(object, a, b)) then print('Is stationary object collision: True.') else print('Is stationary object collision: False.') end
+  -- print('Checking if has landed...')
+  --  if (IsAbove(object, a, b, normal_y)) then print('Is above: True. Normal_y: '..math.round(normal_y)) else print('Is above: False. Normal_y: '..math.round(normal_y)) end
+  --  if (IsStationaryObjectCollision(object, a, b)) then print('Is stationary object collision: True.') else print('Is stationary object collision: False.') end
     
   if (
     (IsAbove(object, a, b, normal_y)) and
     (IsStationaryObjectCollision(object, a, b))
   ) then
     if not is_player then
-      print('Landed.')
-      self:stopVerticalMotion()
-      self.gravity = Boy.gravity
+      -- print('Landed.')
+      print("Vertical motion: ", self.y_velocity)
+      self:land()
     end
 
     if (is_player) and (not IsLadderCollision(object, a, b)) then
-      print('Landed.')
-      self:stopVerticalMotion()
-      self.gravity = Boy.gravity
+      -- print('Landed.')
+      print("Vertical motion: ", self.y_velocity)
+
+      self:land()
     end
 
   else
@@ -407,6 +435,22 @@ function Boy:isOnLadder()
   return on_ladder
 end
 
+function Boy:land()
+  local y_velocity = self.y_velocity
+  self:playLandingAudio(y_velocity)
+  self:stopVerticalMotion()
+  self.gravity = Boy.gravity
+end
+
+function Boy:playLandingAudio(y_velocity)
+  print("VERTICAL MOTION: ", self.y_velocity)
+  local weight = "light"
+
+  if y_velocity > 1200 then weight = "mid" end
+  if y_velocity > 1500 then weight = "heavy" end
+
+  Sounds.landing['impact_'..weight]:play()
+end
 
 -- function Boy:hasLanded()
 

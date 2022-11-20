@@ -11,6 +11,7 @@ require "categories"
 require "boy"
 require "bulb"
 require "bulb_socket"
+require "audio"
 
 -- Global state
 MENU = true
@@ -19,6 +20,12 @@ WIN = false
 -- Global getters / setters
 function START_GAME()
   MENU = false
+  Sounds.music:pause()
+end
+
+function MAIN_MENU()
+  MENU = true
+  Sounds.music:play()
 end
 
 function WIN_GAME()
@@ -30,6 +37,9 @@ function EXIT_GAME()
 end
 
 function love.load()
+
+  Menu:load()
+  MAIN_MENU()
 
   ---
   --- DONE! 1. Add ladder behaviour
@@ -43,7 +53,6 @@ function love.load()
   --- @todo 8. Look in to setting inertia on bodies
   --- @todo 9. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
-  Menu:load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
   ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
@@ -154,7 +163,7 @@ function love.keypressed(key, _, isrepeat)
   end
 
   if key == "escape" then
-    EXIT_GAME()
+    MAIN_MENU()
   end
 end
 

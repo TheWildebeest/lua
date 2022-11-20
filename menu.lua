@@ -60,10 +60,10 @@ function Menu:draw()
   -- Draw background
   love.graphics.setColor(Colors.brown)
   love.graphics.rectangle("fill", 0, 0, windowWidth, windowHeight)
-  print(Title.x)
+  -- print(Title.x)
 
   -- Draw main graphic
-  love.graphics.setColor(1,1,1, 0.3)
+  love.graphics.setColor(1,1,1)
   love.graphics.draw(
     HeroImage,
     windowWidth * 0.175,
