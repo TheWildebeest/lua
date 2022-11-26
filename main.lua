@@ -24,6 +24,7 @@ function START_GAME()
 end
 
 function MAIN_MENU()
+  WIN = false
   MENU = true
   Sounds.music:play()
 end
@@ -37,21 +38,20 @@ function EXIT_GAME()
 end
 
 function love.load()
-
+  Sounds:load()
   Menu:load()
   MAIN_MENU()
 
   ---
   --- DONE! 1. Add ladder behaviour
-  --- DONE 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
+  --- DONE! 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
   --- Enough for CS50 completion ?
-  --- @todo 3. Create main menu UI before game
-  --- @todo 4. Create main menu UI before game
-  --- @todo 5. Sounds
-  --- @todo 6. Animations
-  --- @todo 7. Create levels system
-  --- @todo 8. Look in to setting inertia on bodies
-  --- @todo 9. Smashable bulbs
+  --- DONE! 3. Create main menu UI before game
+  --- @todo 4. Sounds (started) - use https://love2d.org/wiki/TEsound
+  --- @todo 5. Animations (partly DONE)
+  --- @todo 6. Create levels system
+  --- @todo 7. Look in to setting inertia on bodies
+  --- @todo 8. Smashable bulbs
   --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
   love.graphics.setDefaultFilter("nearest", "nearest")
   math.randomseed(os.time())
@@ -104,12 +104,12 @@ function love.update(dt)
 end
 
 function love.draw()
-  if WIN then
+  if MENU then Menu:draw()
+  elseif WIN then
     local win_text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 100), "OMG YOU TOTALLY WON!!!")
     love.graphics.draw(Background)
     love.graphics.setColor(unpack({ 0.5, 0.3, 0.1 }))
     love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0.25, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
-  elseif MENU then Menu:draw()
   else
     love.graphics.setColor(1, 1, 1)
     love.graphics.draw(Background)

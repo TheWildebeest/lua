@@ -241,8 +241,9 @@ function Boy:applyGravity(dt)
 end
 
 function Boy:changeLightbulb()
-  -- print('Changing the lightbulb!')
+  print('Changing the lightbulb!')
   local x, y = self.body:getPosition()
+  Sounds.change_lightbulb:play()
   table.insert(AllBulbz, Bulb(World, x + 50, y))
 end
 
@@ -280,9 +281,11 @@ function Boy:keypressed(key, _, isrepeat)
       if not isrepeat then
         if self:isOnSurface() then
           print('is on surface')
+          Sounds.jump:play()
           self.y_velocity = -self.jump_strength
         elseif self:isOnLadder() then
           print('is on ladder')
+          Sounds.jump:play()
           self.y_velocity = -self.jump_strength
         end
       end
@@ -444,12 +447,13 @@ end
 
 function Boy:playLandingAudio(y_velocity)
   print("VERTICAL MOTION: ", self.y_velocity)
-  local weight = "light"
+  local weight = "light" -- TODO: only have light impact above a threshold (should be higher than 0 or 1 though)
 
   if y_velocity > 1200 then weight = "mid" end
   if y_velocity > 1500 then weight = "heavy" end
 
-  Sounds.landing['impact_'..weight]:play()
+  Sounds.landing_impact[weight]:play()
+  Sounds.landing_effort[weight]:play()
 end
 
 -- function Boy:hasLanded()
