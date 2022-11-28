@@ -447,13 +447,16 @@ end
 
 function Boy:playLandingAudio(y_velocity)
   print("VERTICAL MOTION: ", self.y_velocity)
-  local weight = "light" -- TODO: only have light impact above a threshold (should be higher than 0 or 1 though)
+  local weight = nil -- TODO: only have light impact above a threshold (should be higher than 0 or 1 though)
 
+  if y_velocity > 200 then weight = "light" end
   if y_velocity > 1200 then weight = "mid" end
   if y_velocity > 1500 then weight = "heavy" end
 
-  Sounds.landing_impact[weight]:play()
-  Sounds.landing_effort[weight]:play()
+  if weight then
+    Sounds.landing_impact[weight]:play()
+    Sounds.landing_effort[weight]:play()
+  end
 end
 
 -- function Boy:hasLanded()
