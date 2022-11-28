@@ -37,13 +37,40 @@ function Sound:play()
     if self.src:isPlaying() and (not self.src:isLooping()) then sourceToStop = self.src end
     sourceToPlay = self.src
   end
-  if sourceToStop then sourceToStop:seek(0) end
+  if sourceToStop then sourceToStop:stop() end
   sourceToPlay:play()
 end
 
+function Sound:isPlaying()
+  local isPlaying = false
+  if type(self.src) == 'table' then
+    for i, v in pairs(self.src) do
+      if v:isPlaying() then isPlaying = true end
+    end
+  else
+    isPlaying = self.src:isPlaying()
+  end
+  return isPlaying
+end
+
 function Sound:pause()
-  local source = self.src
-  source:pause()
+  if type(self.src) == 'table' then
+    for i, v in pairs(self.src) do
+      if v:isPlaying() then v:pause() end
+    end
+  else
+    self.src:pause()
+  end
+end
+
+function Sound:stop()
+  if type(self.src) == 'table' then
+    for i, v in pairs(self.src) do
+      if v:isPlaying() then v:stop() end
+    end
+  else
+    self.src:stop()
+  end
 end
 
 function Sound:setLooping(shouldLoop)
@@ -61,9 +88,13 @@ end
 function Sounds:new()
 
   -- Music
-  local music = Sound(SoundTypes.MUSIC, 'assets/audio/menu_music.wav')
-  music:setLooping(true)
-  Sounds.music = music
+  local menu_music = Sound(SoundTypes.MUSIC, 'assets/audio/menu_music.wav')
+  menu_music:setLooping(true)
+  Sounds.menu_music = menu_music
+
+  local level_1_music = Sound(SoundTypes.MUSIC, 'assets/audio/level_1_music.wav')
+  level_1_music:setLooping(true)
+  Sounds.level_1_music = level_1_music
 
   -- SFX
 

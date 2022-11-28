@@ -20,13 +20,15 @@ WIN = false
 -- Global getters / setters
 function START_GAME()
   MENU = false
-  Sounds.music:pause()
+  Sounds.menu_music:pause()
+  Sounds.level_1_music:play()
 end
 
 function MAIN_MENU()
+  if Sounds.level_1_music:isPlaying() then Sounds.level_1_music:stop() end
   WIN = false
   MENU = true
-  Sounds.music:play()
+  Sounds.menu_music:play()
 end
 
 function WIN_GAME()
