@@ -450,7 +450,7 @@ function Boy:playLandingAudio(y_velocity)
   local weight = nil -- TODO: only have light impact above a threshold (should be higher than 0 or 1 though)
 
   if y_velocity > 200 then weight = "light" end
-  if y_velocity > 1200 then weight = "mid" end
+  if y_velocity > 1000 then weight = "mid" end
   if y_velocity > 1500 then weight = "heavy" end
 
   if weight then
