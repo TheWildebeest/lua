@@ -61,7 +61,7 @@ end
 function Sounds:new()
 
   -- Music
-  local music = Sound(SoundTypes.MUSIC, 'assets/audio/menu_music.mp3')
+  local music = Sound(SoundTypes.MUSIC, 'assets/audio/menu_music.wav')
   music:setLooping(true)
   Sounds.music = music
 

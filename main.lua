@@ -40,8 +40,6 @@ end
 function love.load()
   Sounds:load()
   Menu:load()
-  MAIN_MENU()
-
   ---
   --- DONE! 1. Add ladder behaviour
   --- DONE! 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
@@ -80,6 +78,7 @@ function love.load()
   AllBulbz = { }
 
   SOCKET = Socket(ENVIRONMENT, World)
+  MAIN_MENU()
 end
 
 
