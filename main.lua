@@ -47,7 +47,7 @@ function love.load()
   --- DONE! 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
   --- Enough for CS50 completion ?
   --- DONE! 3. Create main menu UI before game
-  --- @todo 4. Sounds (started) - use https://love2d.org/wiki/TEsound
+  --- DONE! 4. Sounds
   --- @todo 5. Animations (partly DONE)
   --- @todo 6. Create levels system
   --- @todo 7. Look in to setting inertia on bodies
