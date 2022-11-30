@@ -376,8 +376,10 @@ function Boy:isBeneathSurface()
   local beneath = false
 
   for _, collision in ipairs(self.collisions) do
-    if IsBeneath(self.fixture, collision.fixture_a, collision.fixture_b, collision.normal_y) then
-      beneath = true
+    if not collision.fixture_a:getCategory() == Categories.BULB and not collision.fixture_b:getCategory() == Categories.BULB then
+      if IsBeneath(self.fixture, collision.fixture_a, collision.fixture_b, collision.normal_y) then
+        beneath = true
+      end
     end
   end
   
