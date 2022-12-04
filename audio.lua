@@ -27,7 +27,6 @@ function Sound:play()
   local sourceToStop = nil
 
   if type(self.src) == 'table' then
-    print('source is table')
     local index = math.random(#self.src)
     for i, v in pairs(self.src) do
       if v:isPlaying() and (not v:isLooping()) then sourceToStop = v end
@@ -80,7 +79,6 @@ function Sound:setLooping(shouldLoop)
       v:setLooping(shouldLoop)
     end
   else
-    print('Setting looping to true')
     self.src:setLooping(shouldLoop)
   end
 end
