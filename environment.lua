@@ -7,7 +7,6 @@ function Environment:new(screen_width, screen_height, fullscreen, debug)
   self.wall_thickness = 16
   self.spacer = screen_width * 0.02
   self.meter = screen_width * 0.1
-  self.use_ball = debug
 
   if self.fullscreen then love.window.setFullscreen(true, "exclusive") end
 end
