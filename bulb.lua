@@ -17,6 +17,13 @@ Bulb.initShape = function (scale)
   return polygon
 end
 
+-- `Static`
+Bulb.updateAll = function(allBulbz, dt)
+  for _, each in ipairs(allBulbz) do
+    each:update(dt)
+  end
+end
+
 function Bulb:init(world, x, y)
   self.image = love.graphics.newImage("assets/img/bulb/1.png")
   self.scale = Bulb.width / self.image:getWidth()
@@ -24,7 +31,6 @@ function Bulb:init(world, x, y)
   self.shape = Bulb.initShape(self.scale)
   self.fixture = love.physics.newFixture(self.body, self.shape)
   -- print('Bulb scale: ', self.scale)
-  -- self.fixture:setRestitution(0) -- let the ball bounce
   self.fixture:setDensity(0)
   -- self.body:setMass(0.1)
   self.collisions = { }
@@ -165,20 +171,3 @@ function Bulb:isBeneathSurface()
 end
 
 --- ----------------------------------------------------------------------------------------------------------------------
-
--- Bulb.update = function(dt)
---   if love.keyboard.isDown("right") then
---     Ball.body:applyForce(400, 0)
---   elseif love.keyboard.isDown("left") then
---     Ball.body:applyForce(-400, 0)
---   elseif love.keyboard.isDown("up") then
---     Ball.body:applyForce(0, -400)
---   elseif love.keyboard.isDown("down") then
---     Ball.body:applyForce(0, 400)
---   end
--- end
-
--- Ball.draw = function()
---   love.graphics.setColor(0.76, 0.18, 0.05)
---   love.graphics.circle("fill", Ball.body:getX(), Ball.body:getY(), Ball.shape:getRadius())
--- end

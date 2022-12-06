@@ -1,3 +1,11 @@
+--- @todo 1. Prevent jump when colliding with wall or beneath something (i.e. bulbs)
+--- @todo 2. Animations (partly DONE)
+--- @todo 3. Create levels system
+--- @todo 4. Look in to setting inertia on bodies
+--- @todo 5. Smashable bulbs
+--- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
+
+-- Required for realtime debugging. Delete before deploying
 io.stdout:setvbuf("no")
 
 Object = require("classic")
@@ -12,6 +20,7 @@ require "boy"
 require "bulb"
 require "bulb_socket"
 require "audio"
+require "global_functions"
 
 -- Global state
 MENU = true
@@ -24,38 +33,18 @@ function START_GAME()
   Sounds.level_1_music:play()
 end
 
-function MAIN_MENU()
-  if Sounds.level_1_music:isPlaying() then Sounds.level_1_music:stop() end
-  WIN = false
-  MENU = true
-  Sounds.menu_music:play()
-end
-
-function WIN_GAME()
-  WIN = true
-end
-
-function EXIT_GAME()
-  love.event.push("quit")
-end
-
 function love.load()
+  -- Seed pseudo-random number generator
+  math.randomseed(os.time())
+  
+  -- Set up environment variables
+  ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
+
+  -- Load audio files
   Sounds:load()
   Menu:load()
-  ---
-  --- DONE! 1. Add ladder behaviour
-  --- DONE! 2. Add win condition - nearly there, added bulb socket, just need to check for bulb collisions on bottom.
-  --- Enough for CS50 completion ?
-  --- DONE! 3. Create main menu UI before game
-  --- DONE! 4. Sounds
-  --- @todo 5. Animations (partly DONE)
-  --- @todo 6. Create levels system
-  --- @todo 7. Look in to setting inertia on bodies
-  --- @todo 8. Smashable bulbs
-  --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
-  love.graphics.setDefaultFilter("nearest", "nearest")
-  math.randomseed(os.time())
-  ENVIRONMENT = Environment(love.graphics.getWidth(), love.graphics.getHeight(), true, false)
+
+  -- Set up world
   love.physics.setMeter(ENVIRONMENT.meter)
   Map = Tiled("assets/map/1.lua", { "box2d" })
   World = love.physics.newWorld(0, 0)
@@ -85,21 +74,12 @@ end
 
 
 function love.update(dt)
-  Menu:update()
   ENVIRONMENT:update(dt, love.graphics.getWidth(), love.graphics.getHeight())
   World:update(dt)
-  for _, each in ipairs(AllBoyz) do
-    each:update(dt)
-  end
-
-  for _, each in ipairs(AllBulbz) do
-    each:update(dt)
-  end
-
+  Menu:update()
+  Boy.updateAll(AllBoyz, dt)
+  Bulb.updateAll(AllBulbz, dt)
   Box.update(dt)
-  if Ball then
-    Ball.update(dt)
-  end
   Map:update(dt)
   -- SOCKET:update(dt)
 end
@@ -115,9 +95,6 @@ function love.draw()
     love.graphics.setColor(1, 1, 1)
     love.graphics.draw(Background)
     -- Walls:draw()
-    if Ball then
-      Ball.draw()
-    end
     Map:draw(0, 0, 1, 1)
     
     -- Draw the choreboyz
