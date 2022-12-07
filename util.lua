@@ -13,3 +13,16 @@ function math.round(num)
     return math.ceil(num-.5)
   end
 end
+
+function IsDirectionKey(key)
+  return (
+    key == 'w' or
+    key == 'a' or
+    key == 's' or
+    key == 'd' or
+    key == 'up' or
+    key == 'left' or
+    key == 'down' or
+    key == 'right'
+  )
+end
