@@ -1,8 +1,9 @@
---- @todo 1. Prevent jump when colliding with wall or beneath something (i.e. bulbs)
---- @todo 2. Animations (partly DONE)
---- @todo 3. Create levels system
---- @todo 4. Look in to setting inertia on bodies
---- @todo 5. Smashable bulbs
+--- @todo 1. Move all BOY update logic from physics callbacks into Boy:update
+--- @todo 2. Finish animations (ladder state, climbing state, throwing state)
+--- @todo 3. Add ladder climbing movement
+--- @todo 4. Create levels system
+--- @todo 5. Look in to setting inertia on bodies
+--- @todo 6. Smashable bulbs
 --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
 -- Required for realtime debugging. Delete before deploying
@@ -75,12 +76,17 @@ end
 
 function love.update(dt)
   ENVIRONMENT:update(dt, love.graphics.getWidth(), love.graphics.getHeight())
-  World:update(dt)
-  Menu:update()
-  Boy.updateAll(AllBoyz, dt)
-  Bulb.updateAll(AllBulbz, dt)
-  Box.update(dt)
-  Map:update(dt)
+  if MENU then
+    Menu:update()
+  end
+
+  if not MENU then
+    World:update(dt)
+    Boy.updateAll(AllBoyz, dt)
+    Bulb.updateAll(AllBulbz, dt)
+    Box.update(dt)
+    Map:update(dt)
+  end
   -- SOCKET:update(dt)
 end
 
