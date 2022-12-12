@@ -1,7 +1,7 @@
---- @todo 1. Move all BOY update logic from physics callbacks into Boy:update
---- @todo 2. Finish animations (ladder state, climbing state, throwing state)
---- @todo 3. Add ladder climbing movement
---- @todo 4. Create levels system
+--- @todo 1. Finish animations (climbing state, throwing state)
+--- @todo 2. Add instructions on menu screen
+--- @todo 3. Add win screen (lighten room, leave lightbulb where it is and turn on)
+--- @todo 4. SUBMIT
 --- @todo 5. Look in to setting inertia on bodies
 --- @todo 6. Smashable bulbs
 --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
@@ -45,13 +45,16 @@ function love.load()
   Sounds:load()
   Menu:load()
 
+  -- Allow repeat key inputs
+  love.keyboard.setKeyRepeat(true)
+
   -- Set up world
   love.physics.setMeter(ENVIRONMENT.meter)
   Map = Tiled("assets/map/1.lua", { "box2d" })
-  World = love.physics.newWorld(0, 0)
+  World = love.physics.newWorld(0, ENVIRONMENT.GRAVITY)
   Map:box2d_init(World)
   Map.layers.solid.visible = false
-  World:setCallbacks(BeginContact, EndContact)
+  World:setCallbacks(BeginContact, EndContact, PreSolve)
   Background = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
   -- Choreboyz box (dispenses new boyz)
   Box = {
@@ -82,8 +85,9 @@ function love.update(dt)
 
   if not MENU then
     World:update(dt)
+    -- Boy.updateAll(AllBoyz, dt)
     Boy.updateAll(AllBoyz, dt)
-    Bulb.updateAll(AllBulbz, dt)
+    -- Bulb.updateAll(AllBulbz, dt)
     Box.update(dt)
     Map:update(dt)
   end
@@ -125,6 +129,23 @@ function love.draw()
 
     -- Draw the bulb socket
     SOCKET:draw()
+
+  --   -- Draw collisions
+  --   love.graphics.setColor(1,0,0)
+  --   for _, body in pairs(World:getBodies()) do
+  --     for _, fixture in pairs(body:getFixtures()) do
+  --         local shape = fixture:getShape()
+  
+  --         if shape:typeOf("CircleShape") then
+  --             local cx, cy = body:getWorldPoints(shape:getPoint())
+  --             love.graphics.circle("fill", cx, cy, shape:getRadius())
+  --         elseif shape:typeOf("PolygonShape") then
+  --             love.graphics.polygon("fill", body:getWorldPoints(shape:getPoints()))
+  --         else
+  --             love.graphics.line(body:getWorldPoints(shape:getPoints()))
+  --         end
+  --     end
+  -- end
   end
 end
 
@@ -133,8 +154,9 @@ function love.keypressed(key, _, isrepeat)
     eachboy:keypressed(key, _, isrepeat)
   end
 
-  if key == "x" then
-    table.insert(AllBoyz, Boy(ENVIRONMENT, World))
+  if key == "x" and not isrepeat then
+    local new_boy = Boy(ENVIRONMENT, World)
+    table.insert(AllBoyz, new_boy)
   end
 
   if key == "f11" then
