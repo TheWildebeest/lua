@@ -1,7 +1,6 @@
---- @todo 1. Finish animations (climbing state, throwing state)
---- @todo 2. Add instructions on menu screen
---- @todo 3. Add win screen (lighten room, leave lightbulb where it is and turn on)
---- @todo 4. SUBMIT
+--- @todo 1. Add win screen (lighten room, leave lightbulb where it is and turn on)
+--- @todo 2. Finish animations (climbing state, throwing state)
+--- @todo 3. SUBMIT
 --- @todo 5. Look in to setting inertia on bodies
 --- @todo 6. Smashable bulbs
 --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
