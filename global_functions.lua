@@ -3,6 +3,7 @@ function MAIN_MENU()
   WIN = false
   MENU = true
   Sounds.menu_music:play()
+  if Menu.SHOW_CONTROLS then Menu:toggleControls() end
 end
 
 function WIN_GAME()
