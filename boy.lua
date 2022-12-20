@@ -2,49 +2,76 @@ Boy = Object:extend()
 
 -- Sprites
 Boy.images = {
-  idle = love.graphics.newImage("assets/img/boy/idle_new.png"),
-  ladder = love.graphics.newImage("assets/img/boy/idle_ladder.png"),
-  walking = love.graphics.newImage("assets/img/boy/walking.png")
+  idle_left = love.graphics.newImage("assets/img/boy/idle_left.png"),
+  idle_right = love.graphics.newImage("assets/img/boy/idle_right.png"),
+  ladder_left = love.graphics.newImage("assets/img/boy/ladder_left.png"),
+  ladder_right = love.graphics.newImage("assets/img/boy/ladder_right.png"),
+  walking_left = love.graphics.newImage("assets/img/boy/walking_left.png"),
+  walking_right = love.graphics.newImage("assets/img/boy/walking_right.png")
 }
 
 Boy.sprites = {
-  idle = {
-    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight()),
-    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle:getWidth(), Boy.images.idle:getHeight())
+  idle_left = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle_left:getWidth(), Boy.images.idle_left:getHeight())
   },
-  ladder = {
-    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight()),
-    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight()),
-    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight()),
-    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight()),
-    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight()),
-    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.ladder:getWidth(), Boy.images.ladder:getHeight())
+  idle_right = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.idle_right:getWidth(), Boy.images.idle_right:getHeight())
   },
-  walking = {
-    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
-    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking:getWidth(), Boy.images.walking:getHeight()),
+  ladder_left = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.ladder_left:getWidth(), Boy.images.ladder_left:getHeight())
+  },
+  ladder_right = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.ladder_right:getWidth(), Boy.images.ladder_right:getHeight())
+  },
+  walking_left = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking_left:getWidth(), Boy.images.walking_left:getHeight()),
+  },
+  walking_right = {
+    [1] = love.graphics.newQuad(2,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
+    [2] = love.graphics.newQuad(502,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
+    [3] = love.graphics.newQuad(1002,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
+    [4] = love.graphics.newQuad(1502,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
+    [5] = love.graphics.newQuad(2002,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
+    [6] = love.graphics.newQuad(2502,2, 498,998, Boy.images.walking_right:getWidth(), Boy.images.walking_right:getHeight()),
   }
 }
 
 Boy.getFrameRate = function(speed, state)
   if state == 'idle' then return 5 end
   if state == 'ladder' then return 4 end
-  if state == 'walking' then return math.abs(speed) / 30 end
+  if state == 'walking' or state == 'walking' then return math.abs(speed) / 30 end
 end
 
 -- Static properties/methods
 
 Boy.width = love.physics:getMeter() * 2.5
 Boy.height = love.physics:getMeter() * 5
-Boy.scale = (Boy.width / Boy.images.idle:getHeight()) * 2
+Boy.scale = (Boy.width / Boy.images.idle_right:getHeight()) * 2
 Boy.MAX_SPEED = 600
 Boy.MAX_CLIMB_SPEED = 800
 Boy.LADDER_GRAVITY_ON = 0
@@ -324,9 +351,10 @@ function Boy:draw()
   if not x then x = 10 end
   if not y then y = 10 end
 
+  local state = self.spriteState..'_'..self.facing
+
   local scale_x = Boy.scale
-  if self.facing == 'left' then scale_x = -Boy.scale end
-  love.graphics.draw(Boy.images[self.spriteState], Boy.sprites[self.spriteState][math.floor(self.spriteFrameRef)], x, y, 0, scale_x, Boy.scale, Boy.images[self.spriteState]:getWidth() / 6 / 2, Boy.images[self.spriteState]:getHeight() / 2, 0, 0)
+  love.graphics.draw(Boy.images[state], Boy.sprites[state][math.floor(self.spriteFrameRef)], x, y, 0, scale_x, Boy.scale, Boy.images[state]:getWidth() / 6 / 2, Boy.images[state]:getHeight() / 2, 0, 0)
 end
 
 function Boy:keypressed(key, _, isrepeat)
@@ -444,7 +472,8 @@ function Boy:playCollisionAudio(y_velocity)
 end
 
 function Boy:setAnimationFrame(frame)
-  if frame > (#(Boy.sprites[self.spriteState]) + 1) then
+  local state = self.spriteState..'_'..self.facing
+  if frame > (#(Boy.sprites[state]) + 1) then
     return 1
   end
   return frame
@@ -454,9 +483,10 @@ function Boy:setSpriteState(direction, is_player)
   if not is_player then return 'ladder' end
   
   local spriteState
-  if (direction == 'left' or direction == 'right') then spriteState = 'walking' end
+  if direction == 'left' then spriteState = 'walking' end
+  if direction == 'right' then spriteState = 'walking' end
   if (direction == 'up' or direction == 'down') then spriteState = 'idle' end
-  if direction == 'forward' then spriteState = 'idle' end
+  if direction == 'down' then spriteState = 'idle' end
   if direction == 'forward' then spriteState = 'idle' end
   return spriteState
 end
