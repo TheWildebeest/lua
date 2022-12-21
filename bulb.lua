@@ -100,7 +100,11 @@ end
 -- end
 
 function Bulb:draw()
-  love.graphics.setColor({ 0.8, 0.8, 1, 0.2 })
+  local color = Colors.bulb_off
+  if #self.body:getJoints() > 0 then
+    color = Colors.bulb_on
+  end
+  love.graphics.setColor(color)
 
   local x, y = self.body:getWorldCenter()
   love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))

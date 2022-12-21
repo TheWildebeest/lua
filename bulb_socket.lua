@@ -4,6 +4,8 @@ Socket = Object:extend()
 
 Socket.width = love.physics:getMeter() * 2.5
 Socket.height = love.physics:getMeter() * 2.35
+Socket.joint = nil
+Socket.joint_data = nil
 
 function Socket:init(environment, world)
   self.image = love.graphics.newImage("assets/img/socket.png")
@@ -18,10 +20,11 @@ function Socket:new(environment, world)
   self:init(environment, world)
 end
 
--- function Socket:update(dt)
---   self:checkCollisions()
---   return nil
--- end
+function Socket:update(dt)
+  if (WIN) and (not Socket.joint) and (Socket.joint_data) then
+    Socket.joint = love.physics.newDistanceJoint(unpack(Socket.joint_data))
+  end
+end
 
 function Socket:beginContact(a, b, contact)
   local normal_x, normal_y = contact:getNormal()
@@ -32,7 +35,7 @@ function Socket:beginContact(a, b, contact)
 
   if x1 ~= nil then
     local current = math.round(x1)
-    local target = math.round(love.graphics.getWidth() / 2) 
+    local target = math.round(love.graphics.getWidth() / 2)
     print("x1: ", current, "Aim: ", target)
     if ((target - 10) <= (current)) and ((current) <= (target + 10)) then
       x_contact = true
@@ -50,7 +53,7 @@ function Socket:beginContact(a, b, contact)
 
   if x2 ~= nil then
     local current = math.round(x2)
-    local target = math.round(love.graphics.getWidth() / 2) 
+    local target = math.round(love.graphics.getWidth() / 2)
     print("x2: ", current, "Aim: ", target)
     if ((target - 10) <= (current)) and ((current) <= (target + 10)) then
       x_contact = true
@@ -68,8 +71,20 @@ function Socket:beginContact(a, b, contact)
 
   if y_contact and x_contact then
     print("You win!!!")
-    WIN = true
+    Socket.joint_data = {
+      a:getBody(),
+      b:getBody(),
+      x1 or 0,
+      y1 or 0,
+      x2 or 0,
+      y2 or 0,
+      false
+    }
+    WIN_GAME()
   end
+
+  print(a:getCategory())
+  print(b:getCategory())
 
 end
 

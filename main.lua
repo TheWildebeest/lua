@@ -1,8 +1,9 @@
---- @todo 1. Add win screen (lighten room, leave lightbulb where it is and turn on)
---- @todo 2. Finish animations (climbing state, throwing state)
---- @todo 3. SUBMIT
+--- @todo 1. Add win screen (leave lightbulb where it is and turn on)
+--- @todo 2. SUBMIT
+--- @todo 3. Finish animations (climbing state, throwing state)
 --- @todo 5. Look in to setting inertia on bodies
 --- @todo 6. Smashable bulbs
+--- @todo 7. BUG - boy.lua:357: bad argument #2 to 'draw' (Quad expected, got nil)
 --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
 -- Required for realtime debugging. Delete before deploying
@@ -74,6 +75,7 @@ function love.load()
   AllBulbz = { }
 
   SOCKET = Socket(ENVIRONMENT, World)
+  WIN_FONT = love.graphics.newFont("assets/controls.ttf", 50)
   MAIN_MENU()
 end
 
@@ -92,7 +94,7 @@ function love.update(dt)
     Box.update(dt)
     Map:update(dt)
   end
-  -- SOCKET:update(dt)
+  SOCKET:update(dt)
 end
 
 function love.draw()
@@ -133,9 +135,63 @@ function love.draw()
 
     -- Draw WIN text
     if WIN then
-      local win_text = love.graphics.newText(love.graphics.newFont("assets/controls.ttf", 100), "Congratulations! You completed the task using \n"..tostring(#AllBoyz).." Maintenance Men\n"..tostring(#AllBulbz).." bulbs")
-      love.graphics.setColor(unpack({0, 0, 0}))
-      love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
+      love.graphics.setColor(unpack(Colors.black_alpha))
+      love.graphics.rectangle(
+        "fill",
+        ENVIRONMENT.screen_width * 0.665,
+        ENVIRONMENT.screen_height * 0.025,
+        ENVIRONMENT.screen_width * 0.325,
+        WIN_FONT:getHeight() * 6
+      )
+      love.graphics.setColor(unpack(Colors.green))
+      love.graphics.printf(
+        "Congratulations!",
+        WIN_FONT,
+        ENVIRONMENT.screen_width * 0.675,
+        ENVIRONMENT.screen_height * 0.05,
+        ENVIRONMENT.screen_width * 0.3,
+        "left",
+        0,
+        1,
+        1
+      )
+      love.graphics.setColor(unpack(Colors.yellow))
+      love.graphics.printf(
+        "\nYou completed the task using:",
+        WIN_FONT,
+        ENVIRONMENT.screen_width * 0.675,
+        ENVIRONMENT.screen_height * 0.05,
+        ENVIRONMENT.screen_width * 0.3,
+        "left",
+        0,
+        1,
+        1
+      )
+      love.graphics.setColor(unpack(Colors.brown_light))
+      love.graphics.printf(
+        "\n\n\n      Maintenance Men\n      bulbs",
+        WIN_FONT,
+        ENVIRONMENT.screen_width * 0.675,
+        ENVIRONMENT.screen_height * 0.05,
+        ENVIRONMENT.screen_width * 0.3,
+        "left",
+        0,
+        1,
+        1
+      )
+      love.graphics.setColor(unpack(Colors.green))
+      love.graphics.printf(
+        "\n\n\n"..tostring(#AllBoyz).."\n"..tostring(#AllBulbz),
+        WIN_FONT,
+        ENVIRONMENT.screen_width * 0.675,
+        ENVIRONMENT.screen_height * 0.05,
+        ENVIRONMENT.screen_width * 0.3,
+        "left",
+        0,
+        1,
+        1
+      )
+      -- love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
     end
 
   --   -- Draw collisions
@@ -185,6 +241,10 @@ function love.keypressed(key, _, isrepeat)
       love.window.setMode(1920, 1088, { resizable=true, borderless=false })
     end
   end
+
+  -- if key == "w" then
+  --   WIN_GAME()
+  -- end
 
   if key == "escape" then
     MAIN_MENU()
