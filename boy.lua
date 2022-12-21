@@ -378,7 +378,7 @@ function Boy:keypressed(key, _, isrepeat)
     self:changeLightbulb()
   end
 
-  if key == "x" then
+  if key == "l" then
     if not isrepeat then
       self.spriteState = "ladder"
       self.fixture:setCategory(Categories.DEADBOY)

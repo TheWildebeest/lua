@@ -1,7 +1,7 @@
 Button = Object:extend()
 
-Button.FontSmall = love.graphics.newFont("assets/menu.ttf", 75, "normal", 50)
-Button.FontLarge = love.graphics.newFont("assets/menu.ttf", 80, "normal", 50)
+Button.FontSmall = love.graphics.newFont("assets/controls.ttf", 85, "normal", 50)
+Button.FontLarge = love.graphics.newFont("assets/controls.ttf", 100, "normal", 50)
 
 function Button:new(text, fn, x, y, width, height)
   self.text = text
@@ -33,7 +33,7 @@ function Button:draw()
   love.graphics.setColor(Colors.yellow)
   local font = Button.FontSmall
   local btnFillMode = "fill"
-  local btnTextColor = Colors.brown
+  local btnTextColor = Colors.brown_light
 
   if self.state.hot then
     btnFillMode = "line"

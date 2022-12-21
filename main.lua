@@ -54,7 +54,9 @@ function love.load()
   Map:box2d_init(World)
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact, PreSolve)
-  Background = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
+  Background = {}
+  Background.DEFAULT = love.graphics.newImage("assets/img/background_7_lights_off.jpg")
+  Background.WIN = love.graphics.newImage("assets/img/background_7_lights_on.jpg")
   -- Choreboyz box (dispenses new boyz)
   Box = {
     size = ENVIRONMENT.screen_width * 0.1,
@@ -94,16 +96,16 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.setColor(1, 1, 1)
   if MENU then Menu:draw()
-  elseif WIN then
-    local win_text = love.graphics.newText(love.graphics.newFont("assets/choreboyz.ttf", 100), "OMG YOU TOTALLY WON!!!")
-    love.graphics.draw(Background)
-    love.graphics.setColor(unpack({ 0.5, 0.3, 0.1 }))
-    love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0.25, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
   else
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(Background)
-    -- Walls:draw()
+    -- Draw background
+    local background = Background.DEFAULT
+    if WIN then background = Background.WIN end
+    love.graphics.draw(background)
+    -- end
+
+    -- Draw map
     Map:draw(0, 0, 1, 1)
     
     -- Draw the choreboyz
@@ -128,6 +130,13 @@ function love.draw()
 
     -- Draw the bulb socket
     SOCKET:draw()
+
+    -- Draw WIN text
+    if WIN then
+      local win_text = love.graphics.newText(love.graphics.newFont("assets/controls.ttf", 100), "Congratulations! You completed the task using \n"..tostring(#AllBoyz).." Maintenance Men\n"..tostring(#AllBulbz).." bulbs")
+      love.graphics.setColor(unpack({0, 0, 0}))
+      love.graphics.draw(win_text, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, win_text:getWidth() / 2, win_text:getHeight() / 2)
+    end
 
   --   -- Draw collisions
   --   love.graphics.setColor(1,0,0)
@@ -154,8 +163,18 @@ function love.keypressed(key, _, isrepeat)
   end
 
   if key == "x" and not isrepeat then
-    local new_boy = Boy(ENVIRONMENT, World)
-    table.insert(AllBoyz, new_boy)
+    local player_alive = false
+    for k, v in pairs(AllBoyz) do
+      if v.fixture:getCategory() == Categories.LIVEBOY then
+        player_alive = true
+        break
+      end
+    end
+    print(player_alive)
+    if not player_alive then
+      local new_boy = Boy(ENVIRONMENT, World)
+      table.insert(AllBoyz, new_boy)
+    end
   end
 
   if key == "f11" then
