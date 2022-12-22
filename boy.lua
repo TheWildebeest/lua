@@ -338,7 +338,7 @@ end
 function Boy:changeLightbulb()
   local facing = self.facing
   local x, y = self.body:getPosition()
-  if facing == "left" then x = x - 50 else x = x + 50 end
+  if facing == "left" then x = x - 25 else x = x + 5 end
   Sounds.change_lightbulb:play()
   table.insert(AllBulbz, Bulb(World, x, y, facing))
 end
