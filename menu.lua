@@ -40,7 +40,7 @@ function Menu:load()
   Controls =  {}
 
   Controls['text_one'] = "CONTROLS\n\nMove\n\n\nJump\n\n\nHire a maintenance man\n\n\nHold a ladder\n\n\nThrow lightbulb\n\n\nMenu"
-  Controls['text_two'] = "\n\n\nwasd or arrow keys\n\n\nSpacebar\n\n\n X\n\n\nL\n\n\nE\n\n\nEsc"
+  Controls['text_two'] = "\n\n\nwasd or arrow keys\n\n\nSpacebar\n\n\nX\n\n\nL\n\n\nE\n\n\nEsc"
   Controls['font'] = ControlsFont
   Controls['width'] = Controls.font:getWidth(Controls.text_two)
   Controls['x'] = (windowWidth * 0.8)
