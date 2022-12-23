@@ -22,7 +22,7 @@ end
 
 function Socket:update(dt)
   if (WIN) and (not Socket.joint) and (Socket.joint_data) then
-    Socket.joint = love.physics.newDistanceJoint(unpack(Socket.joint_data))
+    Socket.joint = love.physics.newRopeJoint(unpack(Socket.joint_data))
   end
 end
 
@@ -70,14 +70,27 @@ function Socket:beginContact(a, b, contact)
   end
 
   if y_contact and x_contact then
-    print("You win!!!")
+
+    local anchor_point_socket_x = ENVIRONMENT.screen_width / 2
+    local anchor_point_socket_y = Socket.height
+
+    local body_a_category = a:getCategory()
+    local body_b_category = b:getCategory()
+
+    local bulb = nil
+    if body_a_category == Categories.BULB then bulb = a:getBody() end
+    if body_b_category == Categories.BULB then bulb = b:getBody() end
+
+    local anchor_point_bulb_x_world, anchor_point_bulb_y_world = bulb:getWorldPoint(Bulb.width / 2, 0)
+
     Socket.joint_data = {
-      a:getBody(),
-      b:getBody(),
-      x1 or 0,
-      y1 or 0,
-      x2 or 0,
-      y2 or 0,
+      SOCKET.body,
+      bulb,
+      anchor_point_socket_x,
+      anchor_point_socket_y,
+      anchor_point_bulb_x_world,
+      anchor_point_bulb_y_world,
+      love.physics:getMeter() / 4,
       false
     }
     WIN_GAME()
