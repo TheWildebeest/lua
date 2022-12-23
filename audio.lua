@@ -94,6 +94,10 @@ function Sounds:new()
   level_1_music:setLooping(true)
   Sounds.level_1_music = level_1_music
 
+  local win_music = Sound(SoundTypes.MUSIC, 'assets/audio/win_music.wav')
+  win_music:setLooping(true)
+  Sounds.win_music = win_music
+
   -- SFX
 
   -- Landing impact
