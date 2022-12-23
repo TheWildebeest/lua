@@ -354,7 +354,11 @@ function Boy:draw()
   local state = self.spriteState..'_'..self.facing
 
   local scale_x = Boy.scale
-  love.graphics.draw(Boy.images[state], Boy.sprites[state][math.floor(self.spriteFrameRef)], x, y, 0, scale_x, Boy.scale, Boy.images[state]:getWidth() / 6 / 2, Boy.images[state]:getHeight() / 2, 0, 0)
+  local image = Boy.images[state]
+  local quad = Boy.sprites[state][math.floor(self.spriteFrameRef)]
+  if image and quad then
+    love.graphics.draw(image, quad, x, y, 0, scale_x, Boy.scale, Boy.images[state]:getWidth() / 6 / 2, Boy.images[state]:getHeight() / 2, 0, 0)
+  end
 end
 
 function Boy:keypressed(key, _, isrepeat)
