@@ -4,10 +4,14 @@ Bulb = Object:extend()
 
 Bulb.width = love.physics:getMeter() * 1
 Bulb.vertices = {150,0, 250,200, 250,300, 150,350, 100,350, 0,300, 0,200, 100,0}
+Bulb.on = love.graphics.newImage("assets/img/bulb/on.png")
+Bulb.off = love.graphics.newImage("assets/img/bulb/off.png")
 
 -- `Static`
 Bulb.initBody = function (world, x, y)
-  return love.physics.newBody(world, x, y, "dynamic")
+  local body = love.physics.newBody(world, x, y, "dynamic")
+  body:setBullet(true)
+  return body
 end
 
 -- `Static`
@@ -26,9 +30,8 @@ end
 
 function Bulb:init(world, x, y, direction)
   local x_velocity = 0
-  if direction == "left" then x_velocity = -2000 else x_velocity = 2000 end
-  self.image = love.graphics.newImage("assets/img/bulb/1.png")
-  self.scale = Bulb.width / self.image:getWidth()
+  if direction == "left" then x_velocity = -1200 else x_velocity = 1200 end
+  self.scale = Bulb.width / Bulb.on:getWidth()
   self.body = Bulb.initBody(world, x, y)
   self.body:setLinearVelocity(x_velocity, -900)
   self.shape = Bulb.initShape(self.scale)
@@ -100,17 +103,19 @@ end
 -- end
 
 function Bulb:draw()
-  local color = Colors.bulb_off
+  local img = Bulb.off
   if #self.body:getJoints() > 0 then
-    color = Colors.bulb_on
+    img = Bulb.on
   end
-  love.graphics.setColor(color)
+  --   color = Colors.bulb_on
+  -- end
+  -- love.graphics.setColor(color)
 
   local x, y = self.body:getWorldCenter()
-  love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+  -- love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 
   love.graphics.setColor({ 1, 1, 1 })
-  love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+  love.graphics.draw(img, x, y, self.body:getAngle(), self.scale, self.scale, img:getWidth() / 2, img:getHeight() / 2, 0, 0)
 end
 
 -- function Bulb:keypressed()
