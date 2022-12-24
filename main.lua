@@ -56,8 +56,8 @@ function love.load()
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact, PreSolve)
   Background = {}
-  Background.DEFAULT = love.graphics.newImage("assets/img/background-xmas-lights-off.png")
-  Background.WIN = love.graphics.newImage("assets/img/background-xmas-lights-on.png")
+  Background.DEFAULT = love.graphics.newImage("assets/img/background-plain-lights-off.png")
+  Background.WIN = love.graphics.newImage("assets/img/background-plain-lights-on.png")
 
   -- Choreboyz box (dispenses new boyz)
   Box = {}
