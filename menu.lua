@@ -5,14 +5,15 @@ Colors = require("colors")
 -- -- ------------ --
 local windowWidth = love.graphics.getWidth()
 local windowHeight = love.graphics.getHeight()
-local TitleFont = love.graphics.newFont("assets/altamonte.ttf", 145, "normal", 10)
+local TitleFont = love.graphics.newFont("assets/maintenance-man.ttf", 145, "normal", 10)
 local ControlsFont = love.graphics.newFont("assets/controls.ttf", 50, "normal", 50)
-local InstructionsFont = love.graphics.newFont("assets/controls.ttf", 50, "normal", 50)
-local HeroImage = love.graphics.newImage('assets/img/boy/1.png')
+local InstructionsFont = love.graphics.newFont("assets/instructions.ttf", 50, "normal", 50)
+local HeroImage = love.graphics.newImage('assets/img/player/hero.png')
 
 Menu = Object:extend()
 
 Menu.SHOW_CONTROLS = false
+Menu.XMAS = false
 
 function Menu:load()
 
@@ -71,7 +72,16 @@ function Menu:load()
       windowHeight * 0.85,
       btnWidth,
       windowHeight * 0.1
-    )
+    ),
+    Button(
+    "XMAS",
+    Menu.toggleXmas,
+    windowWidth - (btnWidth * 0.15) - (windowHeight * 0.05),
+    windowHeight * 0.05,
+    btnWidth * 0.20,
+    btnWidth * 0.05,
+    true
+  )
   }
   BackButton = Button(
     "Back",
@@ -237,4 +247,8 @@ end
 
 function Menu:toggleControls()
   Menu.SHOW_CONTROLS = not Menu.SHOW_CONTROLS
+end
+
+function Menu:toggleXmas()
+  Menu.XMAS = not Menu.XMAS
 end

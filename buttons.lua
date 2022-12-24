@@ -1,9 +1,11 @@
 Button = Object:extend()
 
+Button.FontXmasSmall = love.graphics.newFont("assets/controls.ttf", 35, "normal", 50)
+Button.FontXmasLarge = love.graphics.newFont("assets/controls.ttf", 45, "normal", 50)
 Button.FontSmall = love.graphics.newFont("assets/controls.ttf", 85, "normal", 50)
 Button.FontLarge = love.graphics.newFont("assets/controls.ttf", 100, "normal", 50)
 
-function Button:new(text, fn, x, y, width, height)
+function Button:new(text, fn, x, y, width, height, xmas)
   self.text = text
   self.fn = fn
   self.x = x
@@ -13,7 +15,8 @@ function Button:new(text, fn, x, y, width, height)
   self.state = {
     hot = false,
     wasClicked = false,
-    isClicked = false
+    isClicked = false,
+    xmas = xmas
   }
 end
 
@@ -32,6 +35,7 @@ function Button:draw()
 
   love.graphics.setColor(Colors.yellow)
   local font = Button.FontSmall
+  if self.state.xmas then font = Button.FontXmasSmall end
   local btnFillMode = "fill"
   local btnTextColor = Colors.brown_light
 
@@ -39,6 +43,7 @@ function Button:draw()
     btnFillMode = "line"
     btnTextColor = Colors.yellow
     font = Button.FontLarge
+    if self.state.xmas then font = Button.FontXmasLarge end
 
     if self.state.isClicked then
       btnFillMode = "fill"
