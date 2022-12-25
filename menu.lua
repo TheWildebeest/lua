@@ -13,7 +13,6 @@ local HeroImage = love.graphics.newImage('assets/img/player/hero.png')
 Menu = Object:extend()
 
 Menu.SHOW_CONTROLS = false
-Menu.XMAS = false
 
 function Menu:load()
 
@@ -250,5 +249,43 @@ function Menu:toggleControls()
 end
 
 function Menu:toggleXmas()
-  Menu.XMAS = not Menu.XMAS
+  XMAS = not XMAS
+  local infix = ""
+  if XMAS then infix = 'xmas-' end
+  HeroImage = love.graphics.newImage("assets/img/player/"..infix.."hero.png")
+  Boy.images.idle_left = love.graphics.newImage("assets/img/player/"..infix.."idle-left.png")
+  Boy.images.idle_right = love.graphics.newImage("assets/img/player/"..infix.."idle-right.png")
+  Boy.images.ladder_left = love.graphics.newImage("assets/img/player/"..infix.."ladder-left.png")
+  Boy.images.ladder_right = love.graphics.newImage("assets/img/player/"..infix.."ladder-right.png")
+  Boy.images.walking_left = love.graphics.newImage("assets/img/player/"..infix.."walking-left.png")
+  Boy.images.walking_right = love.graphics.newImage("assets/img/player/"..infix.."walking-right.png")
+  Background.DEFAULT = love.graphics.newImage("assets/img/background/"..infix.."background-lights-off.png")
+  Background.WIN = love.graphics.newImage("assets/img/background/"..infix.."background-lights-on.png")
+  Box.image = love.graphics.newImage("assets/img/"..infix.."crate.png")
+  Socket.image = love.graphics.newImage("assets/img/"..infix.."socket.png")
+  Bulb.on = love.graphics.newImage("assets/img/bulb/"..infix.."on.png")
+  Bulb.off = love.graphics.newImage("assets/img/bulb/"..infix.."off.png")
+
+  local play_menu_music = false
+  if Sounds.menu_music:isPlaying() then play_menu_music = true Sounds.menu_music:stop() end
+  local menu_music = Sound(SoundTypes.MUSIC, "assets/audio/"..infix.."menu_music.wav")
+  menu_music:setLooping(true)
+  Sounds.menu_music = menu_music
+  if play_menu_music then Sounds.menu_music:play() end
+
+
+  local play_level_1_music = false
+  if Sounds.level_1_music:isPlaying() then play_level_1_music = true Sounds.level_1_music:stop() end
+  local level_1_music = Sound(SoundTypes.MUSIC, "assets/audio/"..infix.."level_1_music.wav")
+  level_1_music:setLooping(true)
+  Sounds.level_1_music = level_1_music
+  if play_level_1_music then Sounds.level_1_music:play() end
+
+  local play_win_music = false
+  if Sounds.win_music:isPlaying() then play_win_music = true Sounds.win_music:stop() end
+  local win_music = Sound(SoundTypes.MUSIC, "assets/audio/"..infix.."win_music.wav")
+  win_music:setLooping(true)
+  Sounds.win_music = win_music
+  if play_win_music then Sounds.win_music:play() end
+
 end

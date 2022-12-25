@@ -2,13 +2,13 @@ Socket = Object:extend()
 
 -- Static properties/methods
 
+Socket.image = love.graphics.newImage("assets/img/socket.png")
 Socket.width = love.physics:getMeter() * 2.5
 Socket.height = love.physics:getMeter() * 2.35
 Socket.joint = nil
 Socket.joint_data = nil
 
 function Socket:init(environment, world)
-  self.image = love.graphics.newImage("assets/img/socket.png")
   self.scale = Socket.width / self.image:getWidth()
   self.body =  love.physics.newBody(world, environment.screen_width / 2, Socket.height / 2, "static")
   self.shape = love.physics.newPolygonShape(0,0, Socket.width / 2,Socket.height / 2, -Socket.width / 2, Socket.height / 2)
@@ -45,7 +45,7 @@ function Socket:beginContact(a, b, contact)
 
   if y1 ~= nil then
     local current = math.round(y1)
-    local target = math.round(self.image:getHeight() * self.scale)
+    local target = math.round(Socket.image:getHeight() * self.scale)
     if ((target - 2) <= (current)) and ((current) <= (target + 2)) then
       y_contact = true
     end
@@ -63,7 +63,7 @@ function Socket:beginContact(a, b, contact)
 
   if y2 ~= nil then
     local current = math.round(y2)
-    local target = math.round(self.image:getHeight() * self.scale)
+    local target = math.round(Socket.image:getHeight() * self.scale)
     if ((target - 2) <= (current)) and ((current) <= (target + 2)) then
       y_contact = true
     end
@@ -102,6 +102,6 @@ function Socket:beginContact(a, b, contact)
 end
 
 function Socket:draw()
-  love.graphics.draw(self.image, self.body:getX(), self.body:getY(), 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2, 0, 0)
+  love.graphics.draw(Socket.image, self.body:getX(), self.body:getY(), 0, self.scale, self.scale, Socket.image:getWidth() / 2, Socket.image:getHeight() / 2, 0, 0)
   -- love.graphics.polygon("line", self.body:getWorldPoints(self.shape:getPoints()))
 end

@@ -26,6 +26,7 @@ require "global_functions"
 -- Global state
 MENU = true
 WIN = false
+XMAS = false
 
 -- Global getters / setters
 function START_GAME()
@@ -56,12 +57,12 @@ function love.load()
   Map.layers.solid.visible = false
   World:setCallbacks(BeginContact, EndContact, PreSolve)
   Background = {}
-  Background.DEFAULT = love.graphics.newImage("assets/img/background-plain-lights-off.png")
-  Background.WIN = love.graphics.newImage("assets/img/background-plain-lights-on.png")
+  Background.DEFAULT = love.graphics.newImage("assets/img/background/background-lights-off.png")
+  Background.WIN = love.graphics.newImage("assets/img/background/background-lights-on.png")
 
   -- Choreboyz box (dispenses new boyz)
   Box = {}
-  Box.image = love.graphics.newImage("assets/img/crate_2.png")
+  Box.image = love.graphics.newImage("assets/img/crate.png")
   Box.size = ENVIRONMENT.screen_width * 0.1
   Box.scale = Box.size / Box.image:getWidth()
   Box.color = Colors.box_inactive

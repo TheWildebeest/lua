@@ -2,12 +2,12 @@ Boy = Object:extend()
 
 -- Sprites
 Boy.images = {
-  idle_left = love.graphics.newImage("assets/img/player/idle_left.png"),
-  idle_right = love.graphics.newImage("assets/img/player/idle_right.png"),
-  ladder_left = love.graphics.newImage("assets/img/player/ladder_left.png"),
-  ladder_right = love.graphics.newImage("assets/img/player/ladder_right.png"),
-  walking_left = love.graphics.newImage("assets/img/player/walking_left.png"),
-  walking_right = love.graphics.newImage("assets/img/player/walking_right.png")
+  idle_left = love.graphics.newImage("assets/img/player/idle-left.png"),
+  idle_right = love.graphics.newImage("assets/img/player/idle-right.png"),
+  ladder_left = love.graphics.newImage("assets/img/player/ladder-left.png"),
+  ladder_right = love.graphics.newImage("assets/img/player/ladder-right.png"),
+  walking_left = love.graphics.newImage("assets/img/player/walking-left.png"),
+  walking_right = love.graphics.newImage("assets/img/player/walking-right.png")
 }
 
 Boy.sprites = {
