@@ -1,6 +1,8 @@
 # Maintenance Man!
 A prototype physics / puzzle game built with LÖVE.
 
+Check out the **[video demo](https://youtu.be/KcPpZiQwE0c)** for example gameplay.
+
 ## Overview
 
 Inspired by the old gag, "How many people does it take to change a lightbulb?", _Maintenance Man_ gives us an answer once and for all.
