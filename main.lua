@@ -1,9 +1,7 @@
---- @todo 1. SUBMIT
---- @todo 2. Make box transparent when touching Man
+--- @todo 1. Make box transparent when touching Man
 --- @todo 2. Finish animations (climbing state, throwing state)
 --- @todo 3. Look in to setting inertia on bodies
 --- @todo 4. Smashable bulbs
---- @todo 5. BUG - boy.lua:357: bad argument #2 to 'draw' (Quad expected, got nil)
 --- -- YouTube: recursor tutorials https://www.youtube.com/watch?v=_NpDbNtJyDQ&list=PLZVNxI_lsRW2kXnJh2BMb6D82HCAoSTUB&index=3&ab_channel=recursor
 
 -- Required for realtime debugging. Delete before deploying
