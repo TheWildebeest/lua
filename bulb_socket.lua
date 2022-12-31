@@ -81,6 +81,8 @@ function Socket:beginContact(a, b, contact)
     if body_a_category == Categories.BULB then bulb = a:getBody() end
     if body_b_category == Categories.BULB then bulb = b:getBody() end
 
+    if not bulb then return end
+
     local anchor_point_bulb_x_world, anchor_point_bulb_y_world = bulb:getWorldPoint(Bulb.width / 2, 0)
 
     Socket.joint_data = {
