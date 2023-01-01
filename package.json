@@ -1,0 +1,22 @@
+{
+  "name": "maintenance-man",
+  "version": "1.0.0",
+  "description": "A game where you have to change the lightbulb.",
+  "type": "module",
+  "scripts": {
+    "build": "node ./build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheWildebeest/maintenance-man.git"
+  },
+  "author": "David Wildman (TheWildebeest)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheWildebeest/maintenance-man/issues"
+  },
+  "homepage": "https://github.com/TheWildebeest/maintenance-man#readme",
+  "dependencies": {
+    "zip-lib": "^0.7.3"
+  }
+}
